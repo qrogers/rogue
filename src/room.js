@@ -14,6 +14,9 @@ function room(x, y, width, height) {
     this.width  = width;
     this.height = height;
 
+	this.xcor = this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE);
+	this.ycor = this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE);
+
     this.seen = false;
 
     this.floor = [];
@@ -105,54 +108,44 @@ function room(x, y, width, height) {
     this.draw = function() {
         context.fillStyle = "#00FF00";
         context.strokeStyle="#00FF00";
+        var space_border = 2;
         if(this.seen) {
             context.lineWidth="2";
             if(player.current_room === this) {
-                context.rect(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE), this.width * UNIT_SIZE, this.height * UNIT_SIZE);
+                context.rect(this.xcor, this.ycor, this.width * SPACE_SIZE, this.height * SPACE_SIZE);
                 context.stroke();
                 for(var i = 0; i < this.floor.length; i++) {
                     for(var j = 0; j < this.floor[i].length; j ++) {
                         if(this.floor[i][j] === '-') {
-                            context.fillRect(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * i) + ROOM_SPACE, this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * j) + ROOM_SPACE, ROOM_SPACE, ROOM_SPACE);
-                        } //else if(this.floor[i][j] === 'd') {
-                            // context.fillStyle = "#0000FF";
-                            // context.fillRect(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * i) + 5, this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * j) + 5, 5, 5);
-                        // }
-                    }
-                }
-            } else {
-                context.fillRect(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE), this.width * UNIT_SIZE, this.height * UNIT_SIZE);
-                for(var i = 0; i < this.floor.length; i++) {
-                    for(var j = 0; j < this.floor[i].length; j ++) {
-                        if(this.floor[i][j] === 'd') {
-                            //context.fillStyle = "#0000FF";
-                            //context.fillRect(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * i) + 5, this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * j) + 5, 5, 5);
+                            context.fillRect(this.xcor + (SPACE_SIZE * i) + space_border, this.ycor + (SPACE_SIZE * j) + space_border, SPACE_SIZE - (space_border * 2), SPACE_SIZE - (space_border * 2));
                         }
                     }
                 }
+            } else {
+                context.fillRect(this.xcor, this.ycor, this.width * SPACE_SIZE, this.height * SPACE_SIZE);
             }
             if(this.north !== null) {
                 context.beginPath();
-                context.moveTo(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.north_door[0] + 0.5)), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * this.north_door[1]));
-                context.lineTo(this.north.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.north.south_door[0] + 0.5)), this.north.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.north.south_door[1] + 1)));
+                context.moveTo(this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.north_door[0]) + SPACE_SIZE / 2, this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.north_door[1]));
+                context.lineTo(this.north.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.north.south_door[0]) + SPACE_SIZE / 2, this.north.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.north.south_door[1] + 1)));
                 context.stroke();
             }
             if(this.south !== null) {
                 context.beginPath();
-                context.moveTo(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.south_door[0] + 0.5)), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.south_door[1] + 1)));
-                context.lineTo(this.south.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.south.north_door[0] + 0.5)), this.south.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * this.south.north_door[1]));
+                context.moveTo(this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.south_door[0]) + SPACE_SIZE / 2, this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.south_door[1] + 1)));
+                context.lineTo(this.south.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.south.north_door[0]) + SPACE_SIZE / 2, this.south.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.south.north_door[1]));
                 context.stroke();
             }
             if(this.east !== null) {
                 context.beginPath();
-                context.moveTo(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.east_door[0] + 1)), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.east_door[1] + 0.5)));
-                context.lineTo(this.east.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * this.east.west_door[0]), this.east.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.east.west_door[1] + 0.5)));
+                context.moveTo(this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.east_door[0] + 1)), this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.east_door[1]) + SPACE_SIZE / 2);
+                context.lineTo(this.east.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.east.west_door[0]), this.east.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.east.west_door[1] + 1)) - SPACE_SIZE / 2);
                 context.stroke();
             }
             if(this.west !== null) {
                 context.beginPath();
-                context.moveTo(this.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.west_door[0])), this.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.west_door[1] + 0.5)));
-                context.lineTo(this.west.x * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.west.east_door[0] + 1)), this.west.y * (ROOM_BLOCK_SIZE + ROOM_SPACE) + (UNIT_SIZE * (this.west.east_door[1] + 0.5)));
+                context.moveTo(this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.west_door[0]), this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * this.west_door[1]) + SPACE_SIZE / 2);
+                context.lineTo(this.west.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.west.east_door[0] + 1)), this.west.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE) + (SPACE_SIZE * (this.west.east_door[1] + 1)) - SPACE_SIZE / 2);
                 context.stroke();
             }
         }

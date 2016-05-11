@@ -1,11 +1,14 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
-var UNIT_SIZE = 15;
-var ROOM_SPACE = 5;
-var ROOM_BLOCK_SIZE = UNIT_SIZE * 5;
-var BLOCKS_WIDTH  =  Math.floor(canvas.width / ROOM_BLOCK_SIZE) - 1;
-var BLOCKS_HEIGHT =  Math.floor(canvas.height / ROOM_BLOCK_SIZE);
+//TODO: refactor uses
+
+var BLOCK_WIDTH = 5;
+var BLOCK_HEIGHT = 5;
+var BLOCK_DISTANCE = 10;
+var SPACE_SIZE = 15;
+var BLOCKS_WIDTH  =  Math.floor(canvas.width / ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE));
+var BLOCKS_HEIGHT =  Math.floor(canvas.height / ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE));
 
 console.log(BLOCKS_WIDTH);
 console.log(BLOCKS_HEIGHT);
@@ -16,13 +19,12 @@ var rooms = [];
 for(var i = 0; i < BLOCKS_WIDTH; i++) {
     rooms.push([]);
 }
-var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), 3, 3);
+var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), 5, 5);
 var num_rooms = 1;
 var target_num_rooms = 250;
 var player = new player();
 
 r1.spawn_links();
-
 
 while(num_rooms < target_num_rooms){ 
    spawn_rooms();
@@ -54,8 +56,8 @@ function draw() {
         for (var j = 0; j < 10; j++) {
             if(typeof rooms[i][j] !== 'undefined'){
                 rooms[i][j].draw();
-                console.log(i + " " + j);
-                console.log(rooms[i][j]);
+                //console.log(i + " " + j);
+                //console.log(rooms[i][j]);
             }
         }
       }
