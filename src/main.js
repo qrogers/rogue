@@ -32,6 +32,7 @@ while(num_rooms < target_num_rooms){
 }
 
 console.log(num_rooms);
+spawn_enemies();
 player.current_room = r1;
 r1.seen = true;
 
@@ -46,6 +47,16 @@ function spawn_rooms() {
             }
         }
     } 
+}
+
+function spawn_enemies() {
+	for(var i = BLOCKS_WIDTH - 1; i >= 0; i--){
+        for(var j = BLOCKS_HEIGHT - 1; j >= 0; j--){
+            if(typeof rooms[i][j] !== 'undefined'){
+                rooms[i][j].spawn_enemies();
+            }
+        }
+    }
 }
 
 function draw() {
