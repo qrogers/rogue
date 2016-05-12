@@ -1,14 +1,18 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
-//TODO: refactor uses
+var HUD_BUFFER = 10;
+var HUD_WIDTH = canvas.width * .2;
+var HUD_HEIGHT = canvas.height * .98;
+var HUD_X = canvas.width - HUD_WIDTH - HUD_BUFFER;
+var HUD_Y = canvas.height - HUD_HEIGHT - HUD_BUFFER;
 
 var BLOCK_WIDTH = 5;
 var BLOCK_HEIGHT = 5;
 var BLOCK_DISTANCE = 10;
 var SPACE_SIZE = 15;
-var BLOCKS_WIDTH  =  Math.floor(canvas.width / ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE));
-var BLOCKS_HEIGHT =  Math.floor(canvas.height / ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE));
+var BLOCKS_WIDTH  =  Math.floor((canvas.width  - HUD_WIDTH  - HUD_BUFFER) / ((BLOCK_WIDTH  * SPACE_SIZE) + BLOCK_DISTANCE));
+var BLOCKS_HEIGHT =  Math.floor((canvas.height)                           / ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE));
 
 console.log(BLOCKS_WIDTH);
 console.log(BLOCKS_HEIGHT);
@@ -23,6 +27,7 @@ var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIG
 var num_rooms = 1;
 var target_num_rooms = 250;
 var player = new player();
+var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
 r1.spawn_links();
 
@@ -73,18 +78,26 @@ function draw() {
         }
       }
       player.draw();
+      hud.draw();
 }
 
 function handle_keypress(e) {
     var code = e.keyCode;
     if(code === 83) {
-        player.current_room.move_player("south");
+    	player.current_room.move_enemies();
+        player.current_room.move_player([0, 1]);
+    	draw();
     } else if(code === 68) {
-        player.current_room.move_player("east");
+    	player.current_room.move_enemies();
+        player.current_room.move_player([1, 0]);
+    	draw();
     } else if(code === 87) {
-        player.current_room.move_player("north");
+    	player.current_room.move_enemies();
+        player.current_room.move_player([0, -1]);
+   		draw();
     } else if(code === 65) {
-        player.current_room.move_player("west");
+    	player.current_room.move_enemies();
+        player.current_room.move_player([-1, 0]);
+    	draw();
     }
-    draw();
 }

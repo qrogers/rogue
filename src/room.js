@@ -1,5 +1,4 @@
 var OPEN_SPACES = ["-", "d"];
-var ENEMIES = ["e"];
 
 function room(x, y, width, height) {
     this.north = null;
@@ -36,25 +35,29 @@ function room(x, y, width, height) {
     this.enemies = [];
     this.enemy_x;
     this.enemy_y;
+
+    this.ai = new ai();
     
     this.spawn_enemies = function() {
     	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
     	this.enemy = new enemy(this.enemy_x, this.enemy_y, this);
     	this.enemies.push(this.enemy);
-    	this.floor[this.enemy_x][this.enemy_y] = "e";
     };
 
-    this.move_player = function(direction) {
-        if(this.validate_move(direction)) {
-            if(direction === "north") {
-                player.y -= 1;
-            } else if(direction === "south") {
-                player.y += 1;
-            } else if(direction === "east") {
-                player.x += 1;
-            } else if(direction === "west") {
-                player.x -= 1;
+    this.move_enemies = function() {
+        for(var i = 0; i < this.enemies.length; i++) {
+            var movement = this.ai.seek_and_attack_player(this.enemies[i]);
+            if(this.validate_move(movement, this.enemies[i])) {
+                this.enemies[i].x += movement[0];
+                this.enemies[i].y += movement[1];
             }
+        }
+    };
+
+    this.move_player = function(movement) {
+        if(this.validate_move(movement, player)) {
+            player.x += movement[0];
+            player.y += movement[1];
             if(this.floor[player.x][player.y] === 'd') {
                 if(this.north_door !== null && this.north_door[0] === player.x && this.north_door[1] === player.y) {
                     player.current_room = this.north;
@@ -75,44 +78,13 @@ function room(x, y, width, height) {
                 }
                 player.current_room.seen = true;
             }
-        } else if(this.validate_attack(direction)) {
+        } else if(this.validate_attack(movement, player)) {
         	for(var i = 0; i < this.enemies.length; i++) {
-        		if(direction === "north") {
-                	if(this.enemies[i].x === player.x && this.enemies[i].y === player.y - 1) {
-                		this.enemies[i].take_damage(player.attack);
-                		console.log(this.enemies[i]);
-                		if(this.enemies[i].health <= 0) {
-                			this.kill(this.enemies[i]);
-                		}
-                		return;
-                	}
-            	} else if(direction === "south") {
-                	if(this.enemies[i].x === player.x && this.enemies[i].y === player.y + 1) {
-                		this.enemies[i].take_damage(player.attack);
-                		console.log(this.enemies[i]);
-                		if(this.enemies[i].health <= 0) {
-                			this.kill(this.enemies[i]);
-                		}
-                		return;
-                	}
-            	} else if(direction === "east") {
-                	if(this.enemies[i].x === player.x + 1 && this.enemies[i].y === player.y) {
-                		this.enemies[i].take_damage(player.attack);
-                		console.log(this.enemies[i]);
-                		if(this.enemies[i].health <= 0) {
-                			this.kill(this.enemies[i]);
-                		}
-                		return;
-                	}
-            	} else if(direction === "west") {
-                	if(this.enemies[i].x === player.x - 1 && this.enemies[i].y === player.y) {
-                		this.enemies[i].take_damage(player.attack);
-                		console.log(this.enemies[i]);
-                		if(this.enemies[i].health <= 0) {
-                			this.kill(this.enemies[i]);
-                		}
-                		return;
-                	}
+            	if(this.enemies[i].x === player.x + movement[0] && this.enemies[i].y === player.y + movement[1]) {
+            		player.attack_enemy(this.enemies[i]);
+            		if(this.enemies[i].health <= 0) {
+            			this.kill(this.enemies[i]);
+            		}
             	}
         	}
         }
@@ -143,44 +115,21 @@ function room(x, y, width, height) {
         }
     };
 
-    this.validate_move = function(direction) {
-        if(direction === "north") {
-            if(typeof this.floor[player.x][player.y - 1] !== 'undefined' && OPEN_SPACES.includes(this.floor[player.x][player.y - 1])) {
-                return true;
+    this.validate_move = function(movement, unit) {
+        if(typeof this.floor[unit.x + movement[0]] !== 'undefined' && typeof this.floor[unit.x + movement[0]][unit.y + movement[1]] !== 'undefined' && OPEN_SPACES.includes(this.floor[unit.x + movement[0]][unit.y + movement[1]])) {
+            for(var i = 0; i < this.enemies.length; i++) {
+            	if(unit.x + movement[0] === this.enemies[i].x && unit.y + movement[1] === this.enemies[i].y) {
+            		return false;
+            	}
             }
-        } else if(direction === "south") {
-            if(typeof this.floor[player.x][player.y + 1] !== 'undefined' && OPEN_SPACES.includes(this.floor[player.x][player.y + 1])) {
-                return true;
-            }
-        } else if(direction === "east") {
-            if(typeof this.floor[player.x + 1][player.y] !== 'undefined' && OPEN_SPACES.includes(this.floor[player.x + 1][player.y])) {
-                return true;
-            }
-        } else if(direction === "west") {
-            if(typeof this.floor[player.x - 1][player.y] !== 'undefined' && OPEN_SPACES.includes(this.floor[player.x - 1][player.y])) {
-                return true;
-            }
+            return true;
         }
         return false;
     };
-    
-    this.validate_attack = function(direction) {
-        if(direction === "north") {
-            if(typeof this.floor[player.x][player.y - 1] !== 'undefined' && ENEMIES.includes(this.floor[player.x][player.y - 1])) {
-                return true;
-            }
-        } else if(direction === "south") {
-            if(typeof this.floor[player.x][player.y + 1] !== 'undefined' && ENEMIES.includes(this.floor[player.x][player.y + 1])) {
-                return true;
-            }
-        } else if(direction === "east") {
-            if(typeof this.floor[player.x + 1][player.y] !== 'undefined' && ENEMIES.includes(this.floor[player.x + 1][player.y])) {
-                return true;
-            }
-        } else if(direction === "west") {
-            if(typeof this.floor[player.x - 1][player.y] !== 'undefined' && ENEMIES.includes(this.floor[player.x - 1][player.y])) {
-                return true;
-            }
+
+    this.validate_attack = function(movement, unit) {
+        if(typeof this.floor[unit.x + movement[0]] !== 'undefined' && typeof this.floor[unit.x + movement[0]][unit.y + movement[1]] !== 'undefined') {
+            return true;
         }
         return false;
     };
@@ -188,9 +137,9 @@ function room(x, y, width, height) {
     this.draw = function() {
         context.fillStyle = "#00FF00";
         context.strokeStyle="#00FF00";
+        context.lineWidth="2";
         var space_border = 2;
         if(this.seen) {
-            context.lineWidth="2";
             if(player.current_room === this) {
                 context.rect(this.xcor, this.ycor, this.width * SPACE_SIZE, this.height * SPACE_SIZE);
                 context.stroke();

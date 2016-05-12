@@ -1,10 +1,20 @@
 function enemy(x, y, room) {
 	this.x = x;
 	this.y = y;
+	this.attack = 1;
 	this.health = 10;
 	this.room = room;
 	var space_border = 2;
-	
+
+	this.recive_attack = function(damage, attacker) {
+		this.take_damage(damage);
+		hud.set_message("You dealt " + damage);
+	};
+
+	this.attack_enemy = function(target) {
+		target.recive_attack(this.attack);
+	};
+
 	this.take_damage = function(damage) {
 		this.health -= damage;
 	};
