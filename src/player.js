@@ -41,10 +41,21 @@ function player() {
 	this.gain_xp = function(amount) {
 		this.xp += amount;
 		if(this.xp >= this.xpn) {
-			this.level_points += 1;
-			this.level += 1;
-			this.xp -= this.xpn;
-			hud.set_message("Level up");
+			this.level_up();
+		}
+	};
+	
+	this.level_up = function() {
+		this.level_points += 1;
+		this.level += 1;
+		this.xp -= this.xpn;
+		hud.set_message("Level up");
+	};
+	
+	this.level_health = function() {
+		if(this.level_points > 0) {
+			this.max_health += 2;
+			this.level_points -= 1;
 		}
 	};
 

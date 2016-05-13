@@ -1,7 +1,13 @@
 function hud(x, y, width, height) {
 	
-	this.next_level_function = function() {
+	this.next_level_button = function() {
+		hud.buttons = [];
+		new_level();
 		transition_state("game");
+	};
+	
+	this.increase_health_button = function() {
+		player.level_health();
 	};
 	
 	this.x = x;
@@ -11,7 +17,6 @@ function hud(x, y, width, height) {
 	this.height = height;
 	this.messages = [];
 	this.buttons = [];
-	this.buttons.push(new button(40, 40, 122, 40, "Next Level", this.next_level_function));
 	
 	var OSName="Unknown OS";
 	if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
@@ -24,6 +29,12 @@ function hud(x, y, width, height) {
 		if(this.messages.length >= this.height / this.font_size / 2) {
 			this.messages.shift();
 		}
+	};
+
+	this.init_menu = function() {
+		this.buttons.push(new button(40, 40, 122, 40, "Next Level", this.next_level_button));
+		this.buttons.push(new button(166, 40, 122, 40, "+ Health", this.increase_health_button));
+		this.messages = [];
 	};
 
 	this.draw = function() {
@@ -64,6 +75,7 @@ function hud(x, y, width, height) {
 		context.lineWidth = "2";
 		context.rect(20, 20, canvas.width - 40, canvas.height - 40);
 		context.stroke();
+		context.fillText("Skill points: " + player.level_points, 40, 250);
 		for(var i = 0; i < this.buttons.length; i++) {
 			this.buttons[i].draw();
 		}

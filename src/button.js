@@ -8,13 +8,10 @@ function button(x, y, width, height, text, click) {
 	this.color = "#00FF00";
 	
 	this.clicked = function(x, y) {
-		console.log("X: " + x);
-		console.log("Y: " + y);
-		console.log(this.x < x && this.y < y);
-		console.log(this.x + this.width > x && this.y + this.height > y);
 		if(this.x < x && this.y < y && this.x + this.width > x && this.y + this.height > y) {
 			console.log(this.click);
 			this.click();
+			draw();
 		}
 	};
 	

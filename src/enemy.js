@@ -4,7 +4,7 @@ function enemy(x, y, room) {
 	this.attack = 1;
 	this.health = 10;
 	this.skill = 9;
-	this.xp_bounty = 2;
+	this.xp_bounty = 18;
 	this.room = room;
 	var space_border = 2;
 

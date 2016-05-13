@@ -1,7 +1,7 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
-//TODO: Get screen size to determine canvas size
+//TODO: Use screen size to determine canvas size
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -25,48 +25,53 @@ document.addEventListener("keydown", handle_keypress);
 document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
-for(var i = 0; i < BLOCKS_WIDTH; i++) {
-    rooms.push([]);
-}
-
-var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), BLOCK_WIDTH, BLOCK_HEIGHT);
-var num_rooms = 1;
-var target_num_rooms = 250;
 var player = new player();
+var state = "menu";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
-var state = "menu";
-
-r1.spawn_links();
-
-while(num_rooms < target_num_rooms){ 
-   spawn_rooms();
-   num_rooms += 1;
-}
-
-console.log(num_rooms);
-spawn_enemies();
-player.current_room = r1;
-r1.seen = true;
-r1.enemies = [];
-
-var exit_room = null;
-var exit_x;
-var exit_y;
-var iii = 0;
-while(true) {
-	exit_x = random_range(0, BLOCKS_WIDTH  - 1);
-	exit_y = random_range(0, BLOCKS_HEIGHT - 1);
-	console.log(++iii);
-	if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
-		break;
-	}
-}
-
-exit_room = rooms[exit_x][exit_y];
-exit_room.floor[random_range(0, exit_room.width - 1)][random_range(0, exit_room.height - 1)] = "x";
-
+new_level();
+hud.init_menu();
 draw();
+
+function new_level() {
+	rooms = [];
+	for(var i = 0; i < BLOCKS_WIDTH; i++) {
+	    rooms.push([]);
+	}
+	
+	var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), BLOCK_WIDTH, BLOCK_HEIGHT);
+	var num_rooms = 1;
+	var target_num_rooms = 250;
+	
+	r1.spawn_links(num_rooms, target_num_rooms);
+	
+	while(num_rooms < target_num_rooms){ 
+	   spawn_rooms();
+	   num_rooms += 1;
+	}
+	
+	console.log(num_rooms);
+	spawn_enemies();
+	player.current_room = r1;
+	r1.seen = true;
+	r1.enemies = [];
+	
+	var exit_room = null;
+	var exit_x;
+	var exit_y;
+	while(true) {
+		exit_x = random_range(0, BLOCKS_WIDTH  - 1);
+		exit_y = random_range(0, BLOCKS_HEIGHT - 1);
+		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
+			break;
+		}
+	}
+	
+	exit_room = rooms[exit_x][exit_y];
+	exit_room.floor[random_range(0, exit_room.width - 1)][random_range(0, exit_room.height - 1)] = "x";
+
+	player.health = player.max_health;
+}
 
 function spawn_rooms() {
     for(var i = BLOCKS_WIDTH - 1; i >= 0; i--){
@@ -110,6 +115,9 @@ function draw() {
 
 function transition_state(new_state) {
 	state = new_state;
+	if(state === "menu") {
+		hud.init_menu();
+	}
 	draw();
 }
 
