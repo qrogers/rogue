@@ -1,14 +1,16 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
+//TODO: Get screen size to determine canvas size
+
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
 var HUD_HEIGHT = canvas.height * .98;
 var HUD_X = canvas.width - HUD_WIDTH - HUD_BUFFER;
 var HUD_Y = canvas.height - HUD_HEIGHT - HUD_BUFFER;
 
-var BLOCK_WIDTH = 5;
-var BLOCK_HEIGHT = 5;
+var BLOCK_WIDTH = 10;
+var BLOCK_HEIGHT = 15;
 var BLOCK_DISTANCE = 10;
 var SPACE_SIZE = 15;
 var BLOCKS_WIDTH  =  Math.floor((canvas.width  - HUD_WIDTH  - HUD_BUFFER) / ((BLOCK_WIDTH  * SPACE_SIZE) + BLOCK_DISTANCE));
@@ -17,17 +19,21 @@ var BLOCKS_HEIGHT =  Math.floor((canvas.height)                           / ((BL
 console.log(BLOCKS_WIDTH);
 console.log(BLOCKS_HEIGHT);
 
+var TICK_KEY_VALUES = [83, 68, 87, 65];
+
 document.addEventListener("keydown", handle_keypress);
 
 var rooms = [];
 for(var i = 0; i < BLOCKS_WIDTH; i++) {
     rooms.push([]);
 }
-var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), 5, 5);
+var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), BLOCK_WIDTH, BLOCK_HEIGHT);
 var num_rooms = 1;
 var target_num_rooms = 250;
 var player = new player();
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
+
+var state = "menu";
 
 r1.spawn_links();
 
@@ -40,13 +46,30 @@ console.log(num_rooms);
 spawn_enemies();
 player.current_room = r1;
 r1.seen = true;
+r1.enemies = [];
+
+var exit_room = null;
+var exit_x;
+var exit_y;
+var iii = 0;
+while(true) {
+	exit_x = random_range(0, BLOCKS_WIDTH  - 1);
+	exit_y = random_range(0, BLOCKS_HEIGHT - 1);
+	console.log(++iii);
+	if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
+		break;
+	}
+}
+
+exit_room = rooms[exit_x][exit_y];
+exit_room.floor[random_range(0, exit_room.width - 1)][random_range(0, exit_room.height - 1)] = "x";
 
 draw();
 
 function spawn_rooms() {
     for(var i = BLOCKS_WIDTH - 1; i >= 0; i--){
         for(var j = BLOCKS_HEIGHT - 1; j >= 0; j--){
-            if(typeof rooms[i][j] !== 'undefined'){
+            if(typeof rooms[i][j] !== "undefined"){
                 rooms[i][j].spawn_links();
                 return;
             }
@@ -58,7 +81,7 @@ function spawn_enemies() {
 	for(var i = BLOCKS_WIDTH - 1; i >= 0; i--){
         for(var j = BLOCKS_HEIGHT - 1; j >= 0; j--){
             if(typeof rooms[i][j] !== 'undefined'){
-                rooms[i][j].spawn_enemies();
+                rooms[i][j].spawn_enemies(random_range(0, 1));
             }
         }
     }
@@ -68,36 +91,36 @@ function draw() {
     canvas.width = canvas.width;
     context.fillStyle = "#000000";
     context.fillRect(0, 0, canvas.width, canvas.height);
-    for (var i = 0; i < rooms.length; i++) {
-        for (var j = 0; j < 10; j++) {
-            if(typeof rooms[i][j] !== 'undefined'){
-                rooms[i][j].draw();
-                //console.log(i + " " + j);
-                //console.log(rooms[i][j]);
-            }
-        }
-      }
-      player.draw();
-      hud.draw();
+    if(state === "game") {
+	    for (var i = 0; i < rooms.length; i++) {
+	        for (var j = 0; j < 10; j++) {
+	            if(typeof rooms[i][j] !== 'undefined'){
+	                rooms[i][j].draw();
+	                //console.log(i + " " + j);
+	                //console.log(rooms[i][j]);
+	            }
+	        }
+	    }
+	 	player.draw();
+    }
+    hud.draw();
 }
 
 function handle_keypress(e) {
     var code = e.keyCode;
+    var movement = [0, 0];
     if(code === 83) {
-    	player.current_room.move_enemies();
-        player.current_room.move_player([0, 1]);
-    	draw();
+        movement = [0, 1];
     } else if(code === 68) {
-    	player.current_room.move_enemies();
-        player.current_room.move_player([1, 0]);
-    	draw();
+        movement = [1, 0];
     } else if(code === 87) {
-    	player.current_room.move_enemies();
-        player.current_room.move_player([0, -1]);
-   		draw();
+        movement = [0, -1];
     } else if(code === 65) {
-    	player.current_room.move_enemies();
-        player.current_room.move_player([-1, 0]);
+        movement = [-1, 0];
+    }
+    if(TICK_KEY_VALUES.includes(code)) {
+    	player.current_room.move_player(movement);
+        player.current_room.move_enemies();
     	draw();
     }
 }

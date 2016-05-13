@@ -3,20 +3,34 @@ function enemy(x, y, room) {
 	this.y = y;
 	this.attack = 1;
 	this.health = 10;
+	this.skill = 9;
+	this.xp_bounty = 2;
 	this.room = room;
 	var space_border = 2;
 
 	this.recive_attack = function(damage, attacker) {
+		hud.set_message("You dealt " + damage + " damage");
 		this.take_damage(damage);
-		hud.set_message("You dealt " + damage);
 	};
 
 	this.attack_enemy = function(target) {
-		target.recive_attack(this.attack);
+		if(Math.random() <= this.skill / target.skill) {
+			if(random_range(0, 100) <= this.skill - target.skill) {
+				target.recive_attack(this.attack * this.attack);
+				hud.set_message("You took critical damage");
+			} else {
+				target.recive_attack(this.attack);
+			}
+		} else {
+			hud.set_message("Enemy missed");
+		}
 	};
 
 	this.take_damage = function(damage) {
 		this.health -= damage;
+		if(this.health <= 0) {
+			hud.set_message("Enemy killed");
+		}
 	};
 	
 	this.draw = function() {

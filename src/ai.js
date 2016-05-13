@@ -5,16 +5,35 @@ function ai() {
 			enemy.attack_enemy(player);
 			return [0, 0];
 		} else {
-			if(enemy.x < player.x) {
+			var x_or_y = random_range(0, 1);
+			       if(enemy.x < player.x && enemy.y === player.y) {
 				return [1, 0];
-			} else if(enemy.x > player.x) {
+			} else if(enemy.x > player.x && enemy.y === player.y) {
 				return [-1, 0];
+			} else if(enemy.y > player.y && enemy.x === player.x) {
+				return [0, -1];
+			} else if(enemy.y < player.y && enemy.x === player.x) {
+				return [0, 1];
+			} else if(enemy.x !== player.x) {
+				if(x_or_y === 0) {
+					if(enemy.x < player.x) {
+						return [1, 0];
+					} else if(enemy.x > player.x) {
+						return [-1, 0];
+					}
+				} else if(x_or_y === 1) {
+					if(enemy.y > player.y) {
+						return [0, -1];
+					} else if(enemy.y < player.y) {
+						return [0, 1];
+					}
+				}
 			} else if(enemy.y > player.y) {
 				return [0, -1];
 			} else if(enemy.y < player.y) {
 				return [0, 1];
 			}
 		}
+		return [0, 0];
 	};
-
 }

@@ -3,12 +3,27 @@ function player() {
 	this.y = 1;
 	this.color = "#0000FF";
 	this.attack = 4;
-	this.health = 12;
+	this.max_health = 12;
+	this.health = this.max_health;
+	this.skill = 25;
+	this.xp = 0;
+	this.xpn = 100;
+	this.level = 1;
+	this.level_points = 1;
 	this.current_room = null;
 	var space_border = 1;
 	
 	this.attack_enemy = function(enemy) {
-		enemy.recive_attack(this.attack, this);
+		if(Math.random() <= this.skill / enemy.skill) {
+			if(random_range(0, 100) <= this.skill - enemy.skill) {
+				enemy.recive_attack(this.attack * 2, this);
+				hud.set_message("Critical hit");
+			} else {
+				enemy.recive_attack(this.attack, this);
+			}
+		} else {
+			hud.set_message("You missed");
+		}
 	};
 
 	this.recive_attack = function(damage) {
@@ -20,6 +35,16 @@ function player() {
 		this.health -= damage;
 		if(this.health <= 0) {
 			this.color = "#FF00FF";
+		}
+	};
+
+	this.gain_xp = function(amount) {
+		this.xp += amount;
+		if(this.xp >= this.xpn) {
+			this.level_points += 1;
+			this.level += 1;
+			this.xp -= this.xpn;
+			hud.set_message("Level up");
 		}
 	};
 
