@@ -1,10 +1,17 @@
 function hud(x, y, width, height) {
+	
+	this.next_level_function = function() {
+		transition_state("game");
+	};
+	
 	this.x = x;
 	this.y = y;
 	this.font_size = 20;
 	this.width = width;
 	this.height = height;
 	this.messages = [];
+	this.buttons = [];
+	this.buttons.push(new button(40, 40, 122, 40, "Next Level", this.next_level_function));
 	
 	var OSName="Unknown OS";
 	if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
@@ -56,8 +63,9 @@ function hud(x, y, width, height) {
 		context.strokeStyle = "#00FF00";
 		context.lineWidth = "2";
 		context.rect(20, 20, canvas.width - 40, canvas.height - 40);
-		context.rect(40, 40, 122, 40);
 		context.stroke();
-		context.fillText("Next Level", 42, 65);
+		for(var i = 0; i < this.buttons.length; i++) {
+			this.buttons[i].draw();
+		}
 	};
 }

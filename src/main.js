@@ -22,11 +22,13 @@ console.log(BLOCKS_HEIGHT);
 var TICK_KEY_VALUES = [83, 68, 87, 65];
 
 document.addEventListener("keydown", handle_keypress);
+document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
 for(var i = 0; i < BLOCKS_WIDTH; i++) {
     rooms.push([]);
 }
+
 var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), BLOCK_WIDTH, BLOCK_HEIGHT);
 var num_rooms = 1;
 var target_num_rooms = 250;
@@ -106,6 +108,11 @@ function draw() {
     hud.draw();
 }
 
+function transition_state(new_state) {
+	state = new_state;
+	draw();
+}
+
 function handle_keypress(e) {
     var code = e.keyCode;
     var movement = [0, 0];
@@ -123,4 +130,10 @@ function handle_keypress(e) {
         player.current_room.move_enemies();
     	draw();
     }
+}
+
+function handle_mouse_up(e) {
+	for(var i = 0; i < hud.buttons.length; i++) {
+		hud.buttons[i].clicked(e.clientX, e.clientY);
+	}
 }
