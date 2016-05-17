@@ -7,7 +7,15 @@ function hud(x, y, width, height) {
 	};
 	
 	this.increase_health_button = function() {
-		player.level_health();
+		player.level_skill("health");
+	};
+	
+	this.increase_attack_button = function() {
+		player.level_skill("attack");
+	};
+	
+	this.increase_skill_button = function() {
+		player.level_skill("skill");
 	};
 	
 	this.x = x;
@@ -33,7 +41,9 @@ function hud(x, y, width, height) {
 
 	this.init_menu = function() {
 		this.buttons.push(new button(40, 40, 122, 40, "Next Level", this.next_level_button));
-		this.buttons.push(new button(166, 40, 122, 40, "+ Health", this.increase_health_button));
+		this.buttons.push(new button(40, 84, 122, 40, "+ Health", this.increase_health_button));
+		this.buttons.push(new button(166, 84, 122, 40, "+ Attack", this.increase_attack_button));
+		this.buttons.push(new button(292, 84, 122, 40, "+ Skill", this.increase_skill_button));
 		this.messages = [];
 	};
 
@@ -43,6 +53,10 @@ function hud(x, y, width, height) {
 		} else if(state === "menu") {
 			this.draw_menu();
 		}
+		context.fillText("HEALTH: " + player.health + "/" + player.max_health, this.x + 20, this.y + 40);
+		context.fillText("XP: " + player.xp + "/" + player.xpn, this.x + 200, this.y + 40);
+		context.fillText("ATTACK: " + player.attack, this.x + 20, this.y + 80);
+		context.fillText("SKILL: " + player.skill, this.x + 200, this.y + 80);
 	};
 	
 	this.draw_game = function() {
@@ -51,16 +65,13 @@ function hud(x, y, width, height) {
 		} else if(OSName === "Windows") {
 			context.font = this.font_size + "px Lucida Console";
 		}
-		context.fillStyle = "#00FF00";
-		context.strokeStyle = "#00FF00";
+		context.fillStyle = MAIN_COLOR;
+		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
 		context.rect(this.x, this.y, this.width, this.height);
 		context.stroke();
-		context.fillText("HEALTH: " + player.health + "/" + player.max_health, this.x + 20, this.y + 20);
-		context.fillText("XP: " + player.xp + "/" + player.xpn, this.x + 200, this.y + 20);
-		//context.fillText("--------------------", this.x + 20, this.y + 420);
 		for(var i = 0; i < this.messages.length; i++) {
-			context.fillText(this.messages[i], this.x + 20, this.y + 100 + (20 * i));
+			context.fillText(this.messages[i], this.x + 20, this.y + 120 + (20 * i));
 		}
 	};
 	
@@ -70,12 +81,30 @@ function hud(x, y, width, height) {
 		} else if(OSName === "Windows") {
 			context.font = this.font_size + "px Lucida Console";
 		}
-		context.fillStyle = "#00FF00";
-		context.strokeStyle = "#00FF00";
+		context.fillStyle = MAIN_COLOR;
+		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
 		context.rect(20, 20, canvas.width - 40, canvas.height - 40);
 		context.stroke();
 		context.fillText("Skill points: " + player.level_points, 40, 250);
+		context.fillText("Controls:", 800, 450);
+		context.fillText("W: Move up", 840, 470);
+		context.fillText("A: Move left", 840, 490);
+		context.fillText("S: Move down", 840, 510);
+		context.fillText("D: Move right", 840, 530);
+		context.fillText("Move into enemies to attack", 840, 550);
+		context.fillText("Player", 1200, 400);
+		context.fillText("Enemy", 1200, 440);
+		context.fillText("Chest", 1200, 480);
+		context.fillText("Exit", 1200, 520);
+		context.fillStyle = PLAYER_COLOR;
+		context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
+		context.fillStyle = ENEMY_COLOR;
+		context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
+		context.fillStyle = CHEST_COLOR;
+		context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);
+		context.fillStyle = EXIT_COLOR;
+		context.fillRect(1200, 525, SPACE_SIZE, SPACE_SIZE);
 		for(var i = 0; i < this.buttons.length; i++) {
 			this.buttons[i].draw();
 		}

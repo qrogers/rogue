@@ -5,7 +5,7 @@ function button(x, y, width, height, text, click) {
 	this.height = height;
 	this.text = text;
 	this.click = click;
-	this.color = "#00FF00";
+	this.color = MAIN_COLOR;
 	
 	this.clicked = function(x, y) {
 		if(this.x < x && this.y < y && this.x + this.width > x && this.y + this.height > y) {

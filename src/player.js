@@ -1,7 +1,7 @@
 function player() {
-	this.x = 1;
-	this.y = 1;
-	this.color = "#0000FF";
+	this.x;
+	this.y;
+	this.color = PLAYER_COLOR;
 	this.attack = 4;
 	this.max_health = 12;
 	this.health = this.max_health;
@@ -52,10 +52,18 @@ function player() {
 		hud.set_message("Level up");
 	};
 	
-	this.level_health = function() {
+	this.level_skill = function(skill) {
 		if(this.level_points > 0) {
-			this.max_health += 2;
-			this.level_points -= 1;
+			if(skill === "health") {
+				this.max_health += 2;
+				this.level_points -= 1;
+			} else if (skill === "attack") {
+				this.attack += 1;
+				this.level_points -= 1;
+			} else if (skill === "skill") {
+				this.skill += 3;
+				this.level_points -= 1;
+			}
 		}
 	};
 

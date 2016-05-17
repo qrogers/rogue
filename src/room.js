@@ -1,5 +1,5 @@
-//-: open space, d: door
-var OPEN_SPACES = ["-", "d", "x"];
+//-: open space, d: door, x: exit, c: chest
+var OPEN_SPACES = ["-", "d", "x", "c"];
 
 function room(x, y, width, height) {
     this.north = null;
@@ -17,7 +17,7 @@ function room(x, y, width, height) {
     this.width  = width;
     this.height = height;
 
-	this.xcor = this.x * ((BLOCK_WIDTH * SPACE_SIZE) + BLOCK_DISTANCE);
+	this.xcor = this.x * ((BLOCK_WIDTH  * SPACE_SIZE) + BLOCK_DISTANCE);
 	this.ycor = this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE);
 
     this.seen = false;
@@ -36,10 +36,15 @@ function room(x, y, width, height) {
     this.enemies = [];
     this.enemy_x;
     this.enemy_y;
+    
+    this.chest = null;
 
     this.ai = new ai();
     
     this.spawn_enemies = function(quantity) {
+        if(quantity > (this.width - 2) * (this.height - 2)) {
+        	quantity = (this.width - 2) * (this.height - 2);
+        }
         for(var i = 0; i < quantity; i++) {
         	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
         	this.enemy = new enemy(this.enemy_x, this.enemy_y, this);
@@ -53,24 +58,42 @@ function room(x, y, width, height) {
                 }
             }
         }
-
+    };
+    
+    //Chest functions
+    
+    this.chest_gain_xp = function() {
+		player.gain_xp(50);
+	};
+	
+	//End chest functions
+    
+    this.spawn_chest = function() {
+    	var chest_x;
+    	var chest_y;
+    	while(this.floor[chest_x = random_range(1, this.width - 2)][chest_y = random_range(1, this.height - 2)] !== "-");
+        this.chest = new chest(chest_x, chest_y, this.chest_gain_xp);
+        this.floor[chest_x][chest_y] = "c";
     };
 
     this.move_enemies = function() {
-        for(var i = 0; i < this.enemies.length; i++) {
-            var movement = this.ai.seek_and_attack_player(this.enemies[i]);
-            if(this.validate_move(movement, this.enemies[i])) {
-                this.enemies[i].x += movement[0];
-                this.enemies[i].y += movement[1];
-            }
-        }
+        if(enemy_move_lock === false) {
+	        for(var i = 0; i < this.enemies.length; i++) {
+	            var movement = this.ai.seek_and_attack_player(this.enemies[i]);
+	            if(this.validate_move(movement, this.enemies[i])) {
+	                this.enemies[i].x += movement[0];
+	                this.enemies[i].y += movement[1];
+	            }
+	        }
+	    }   
     };
 
     this.move_player = function(movement) {
+        enemy_move_lock = false;
         if(this.validate_move(movement, player)) {
-            player.x += movement[0];
-            player.y += movement[1];
-            if(this.floor[player.x][player.y] === "d") {
+            if(this.floor[player.x + movement[0]][player.y + movement[1]] === "d") {
+            	player.x += movement[0];
+            	player.y += movement[1];
                 if(this.north_door !== null && this.north_door[0] === player.x && this.north_door[1] === player.y) {
                     player.current_room = this.north;
                     player.x = this.north.south_door[0];
@@ -89,8 +112,15 @@ function room(x, y, width, height) {
                     player.y = this.west.east_door[1];
                 }
                 player.current_room.seen = true;
-            } else if(this.floor[player.x][player.y] === "x") {
+                enemy_move_lock = true;
+            } else if(this.floor[player.x + movement[0]][player.y + movement[1]] === "c") {
+            	this.chest.open();
+            	this.floor[this.chest.x][this.chest.y] = "-";
+            } else if(this.floor[player.x + movement[0]][player.y + movement[1]] === "x") {
             	transition_state("menu");
+            } else {
+            	player.x += movement[0];
+            	player.y += movement[1];
             }
         } else if(this.validate_attack(movement, player)) {
         	for(var i = 0; i < this.enemies.length; i++) {
@@ -107,7 +137,6 @@ function room(x, y, width, height) {
     
     this.kill = function(enemy) {
     	this.enemies.splice(this.enemies.indexOf(enemy), 1);
-    	console.log(this.enemies);
         player.gain_xp(enemy.xp_bounty);
     };
 
@@ -151,8 +180,8 @@ function room(x, y, width, height) {
     };
 
     this.draw = function() {
-        context.fillStyle = "#00FF00";
-        context.strokeStyle="#00FF00";
+        context.fillStyle = MAIN_COLOR;
+        context.strokeStyle = MAIN_COLOR;
         context.lineWidth="2";
         var space_border = 2;
         if(this.seen) {
@@ -162,9 +191,11 @@ function room(x, y, width, height) {
                 for(var i = 0; i < this.floor.length; i++) {
                     for(var j = 0; j < this.floor[i].length; j ++) {
                         if(this.floor[i][j] === "-") {
-                        	context.fillStyle = "#00FF00";
+                        	context.fillStyle = MAIN_COLOR;
                         } else if(this.floor[i][j] === "x") {
-                        	context.fillStyle = "#AAFF00";
+                        	context.fillStyle = EXIT_COLOR;
+                        } else if(this.floor[i][j] === "c") {
+                        	context.fillStyle = CHEST_COLOR;
                         } else {
                         	context.fillStyle = "#000000";
                         }
@@ -208,21 +239,23 @@ function room(x, y, width, height) {
         }
     };
 
-    this.spawn_links = function(num_rooms, target_num_rooms) {
+    this.spawn_links = function(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height) {
         var spawn_weight = 70;
         var relink_weight = 50;
-        var max_room_width = BLOCK_WIDTH;
-        var max_room_height = BLOCK_HEIGHT;
+        var min_room_width = min_width;
+        var max_room_width = max_width;
+        var min_room_height = min_height;
+        var max_room_height = max_height;
         if(num_rooms > target_num_rooms) {
             return;
         }
         if(random_range(0, 100) <= spawn_weight) {
             if(this.y > 0) {
                 if(typeof rooms[x][y - 1] === 'undefined'){
-                    this.set_door("north", new room(x, y - 1, random_range(3, max_room_width), random_range(3, max_room_height)));
+                    this.set_door("north", new room(x, y - 1, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.north.set_door("south", this);
                     num_rooms += 1;
-                    this.north.spawn_links(num_rooms, target_num_rooms);
+                    this.north.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("north", rooms[x][y - 1]);
                     this.north.set_door("south", this);
@@ -232,10 +265,10 @@ function room(x, y, width, height) {
         if(random_range(0, 100) <= spawn_weight) {
             if(this.y < BLOCKS_HEIGHT - 1) {
                 if(typeof rooms[x][y + 1] === 'undefined'){
-                    this.set_door("south", new room(x, y + 1, random_range(3, max_room_width), random_range(3, max_room_height)));
+                    this.set_door("south", new room(x, y + 1, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.south.set_door("north", this);
                     num_rooms += 1;
-                    this.south.spawn_links(num_rooms, target_num_rooms);
+                    this.south.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("south", rooms[x][y + 1]);
                     this.south.set_door("north", this);
@@ -245,10 +278,10 @@ function room(x, y, width, height) {
         if(random_range(0, 100) <= spawn_weight) {
             if(this.x < BLOCKS_WIDTH - 1) {
                 if(typeof rooms[x + 1][y] === 'undefined'){
-                    this.set_door("east", new room(x + 1, y, random_range(3, max_room_width), random_range(3, max_room_height)));
+                    this.set_door("east", new room(x + 1, y, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.east.set_door("west", this);
                     num_rooms += 1;
-                    this.east.spawn_links(num_rooms, target_num_rooms);
+                    this.east.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("east", rooms[x + 1][y]);
                     this.east.set_door("west", this);
@@ -258,10 +291,10 @@ function room(x, y, width, height) {
         if(random_range(0, 100) <= spawn_weight) {
             if(this.x > 0) {
                 if(typeof rooms[x - 1][y] === 'undefined'){
-                    this.set_door("west", new room(x - 1, y, random_range(3, max_room_width), random_range(3, max_room_height)));
+                    this.set_door("west", new room(x - 1, y, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.west.set_door("east", this);
                     num_rooms += 1;
-                    this.west.spawn_links(num_rooms, target_num_rooms);
+                    this.west.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("west", rooms[x - 1][y]);
                     this.west.set_door("east", this);
