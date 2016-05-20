@@ -4,6 +4,7 @@ canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
 //TODO: Use screen size to determine canvas size
+//TODO: Create ESC menu
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -21,7 +22,7 @@ var BLOCKS_HEIGHT = Math.floor((canvas.height)                           / ((BLO
 var MAIN_COLOR = "#00FF00";
 var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
-var ENEMY_COLOR = "#FF0000";
+//var ENEMY_COLOR = "#FF0000";
 var CHEST_COLOR = "#BBEE00";
 var EXIT_COLOR = "#AADDAA";
 
@@ -35,6 +36,8 @@ var player = new player();
 var state = "menu";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
+var level = 0;
+
 //Prevent enemies from moving, used when player enters new room;
 var enemy_move_lock = false;
 
@@ -43,6 +46,11 @@ var max_enemies = 2;
 new_level();
 hud.init_menu();
 draw();
+
+function next_level() {
+	level++;
+	transition_state("menu");
+}
 
 function new_level() {
 	rooms = [];
@@ -152,22 +160,27 @@ function transition_state(new_state) {
 }
 
 function handle_keypress(e) {
-    var code = e.keyCode;
-    var movement = [0, 0];
-    if(code === 83) {
-        movement = [0, 1];
-    } else if(code === 68) {
-        movement = [1, 0];
-    } else if(code === 87) {
-        movement = [0, -1];
-    } else if(code === 65) {
-        movement = [-1, 0];
-    }
-    if(TICK_KEY_VALUES.includes(code)) {
-    	player.current_room.move_player(movement);
-        player.current_room.move_enemies();
-    	draw();
-    }
+    if(state === "game") {
+	    var code = e.keyCode;
+	    var movement = [0, 0];
+	    if(code === 83) {
+	        movement = [0, 1];
+	    } else if(code === 68) {
+	        movement = [1, 0];
+	    } else if(code === 87) {
+	        movement = [0, -1];
+	    } else if(code === 65) {
+	        movement = [-1, 0];
+	    } else if(code === 32) {
+	    	hud.pop_up_text = [];
+	    	draw();
+	    }
+	    if(TICK_KEY_VALUES.includes(code)) {
+	    	player.current_room.move_player(movement);
+	        player.current_room.move_enemies();
+	    	draw();
+	    }
+	}
 }
 
 function handle_mouse_up(e) {

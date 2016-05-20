@@ -24,7 +24,10 @@ function hud(x, y, width, height) {
 	this.width = width;
 	this.height = height;
 	this.messages = [];
+	this.pop_up_text = [];
 	this.buttons = [];
+	
+	this.story_texts = [["LEVEL 1 Story","More story","EVEN MORE STORY"], ["LEVEL 2 Story"], ["LEVEL 3 Story"]];
 	
 	var OSName="Unknown OS";
 	if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
@@ -46,6 +49,18 @@ function hud(x, y, width, height) {
 		this.buttons.push(new button(292, 84, 122, 40, "+ Skill", this.increase_skill_button));
 		this.messages = [];
 	};
+	
+	this.pop_up = function() {
+		context.fillStyle = MAIN_COLOR;
+		context.strokeStyle = MAIN_COLOR;
+		context.lineWidth = "2";
+		context.rect(20, 20, 100, 100);
+		context.fillText("press space to dismiss", 40, 120);
+		context.stroke();
+		for(var i = 0; i < this.pop_up_text.length; i++) {
+			context.fillText(this.pop_up_text[i], 52, 52 + (i * 20));
+		}
+	};
 
 	this.draw = function() {
 		if(state === "game") {
@@ -57,6 +72,8 @@ function hud(x, y, width, height) {
 		context.fillText("XP: " + player.xp + "/" + player.xpn, this.x + 200, this.y + 40);
 		context.fillText("ATTACK: " + player.attack, this.x + 20, this.y + 80);
 		context.fillText("SKILL: " + player.skill, this.x + 200, this.y + 80);
+		context.fillText("Skill Points: " + player.level_points, this.x + 20, this.y + 720);
+		context.fillText("Money: " + player.money, this.x + 20, this.y + 740);
 	};
 	
 	this.draw_game = function() {
@@ -73,8 +90,11 @@ function hud(x, y, width, height) {
 		for(var i = 0; i < this.messages.length; i++) {
 			context.fillText(this.messages[i], this.x + 20, this.y + 120 + (20 * i));
 		}
+		if(this.pop_up_text.length > 0) {
+			this.pop_up();
+		}
 	};
-	
+
 	this.draw_menu = function() {
 		if(OSName === "MacOS") {
 			context.font = this.font_size + "px Andale Mono";
@@ -86,7 +106,9 @@ function hud(x, y, width, height) {
 		context.lineWidth = "2";
 		context.rect(20, 20, canvas.width - 40, canvas.height - 40);
 		context.stroke();
-		context.fillText("Skill points: " + player.level_points, 40, 250);
+		for(var i = 0; i < this.story_texts[level].length; i++) {
+			context.fillText(this.story_texts[level][i], 550, 300 + (i * 20));
+		}
 		context.fillText("Controls:", 800, 450);
 		context.fillText("W: Move up", 840, 470);
 		context.fillText("A: Move left", 840, 490);
@@ -99,7 +121,7 @@ function hud(x, y, width, height) {
 		context.fillText("Exit", 1200, 520);
 		context.fillStyle = PLAYER_COLOR;
 		context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
-		context.fillStyle = ENEMY_COLOR;
+		context.fillStyle = "#FF0000";
 		context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
 		context.fillStyle = CHEST_COLOR;
 		context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);

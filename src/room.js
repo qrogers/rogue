@@ -45,9 +45,10 @@ function room(x, y, width, height) {
         if(quantity > (this.width - 2) * (this.height - 2)) {
         	quantity = (this.width - 2) * (this.height - 2);
         }
+        var keys = Object.keys(enemies)
         for(var i = 0; i < quantity; i++) {
         	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
-        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this);
+        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, this.ai.seek_and_attack_player, enemies[keys[keys.length * Math.random() << 0]]);
             this.floor[this.enemy_x][this.enemy_y] = "e";
         	this.enemies.push(this.enemy);
         }
@@ -79,7 +80,7 @@ function room(x, y, width, height) {
     this.move_enemies = function() {
         if(enemy_move_lock === false) {
 	        for(var i = 0; i < this.enemies.length; i++) {
-	            var movement = this.ai.seek_and_attack_player(this.enemies[i]);
+	            var movement = this.enemies[i].move();
 	            if(this.validate_move(movement, this.enemies[i])) {
 	                this.enemies[i].x += movement[0];
 	                this.enemies[i].y += movement[1];
@@ -98,6 +99,7 @@ function room(x, y, width, height) {
                     player.current_room = this.north;
                     player.x = this.north.south_door[0];
                     player.y = this.north.south_door[1];
+                    hud.pop_up_text = ["POPUP", "YAY"];
                 } else if(this.south_door !== null && this.south_door[0] === player.x && this.south_door[1] === player.y) {
                     player.current_room = this.south;
                     player.x = this.south.north_door[0];
@@ -117,7 +119,7 @@ function room(x, y, width, height) {
             	this.chest.open();
             	this.floor[this.chest.x][this.chest.y] = "-";
             } else if(this.floor[player.x + movement[0]][player.y + movement[1]] === "x") {
-            	transition_state("menu");
+            	next_level();
             } else {
             	player.x += movement[0];
             	player.y += movement[1];
@@ -138,6 +140,7 @@ function room(x, y, width, height) {
     this.kill = function(enemy) {
     	this.enemies.splice(this.enemies.indexOf(enemy), 1);
         player.gain_xp(enemy.xp_bounty);
+        player.gain_money(enemy.money_bounty);
     };
 
     this.set_door = function(direction, room) {

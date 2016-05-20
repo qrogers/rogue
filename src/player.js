@@ -8,9 +8,12 @@ function player() {
 	this.skill = 25;
 	this.xp = 0;
 	this.xpn = 100;
+	this.money = 100;
 	this.level = 1;
 	this.level_points = 1;
 	this.current_room = null;
+	this.inventroy = [];
+	
 	var space_border = 1;
 	
 	this.attack_enemy = function(enemy) {
@@ -34,7 +37,8 @@ function player() {
 	this.take_damage = function(damage) {
 		this.health -= damage;
 		if(this.health <= 0) {
-			this.color = "#FF00FF";
+			transition_state("menu");
+			this.health = this.max_health;
 		}
 	};
 
@@ -45,6 +49,10 @@ function player() {
 		}
 	};
 	
+	this.gain_money = function(amount) {
+		this.money += amount;
+	};
+	
 	this.level_up = function() {
 		this.level_points += 1;
 		this.level += 1;
@@ -52,10 +60,15 @@ function player() {
 		hud.set_message("Level up");
 	};
 	
+	this.add_to_onventory = function(item) {
+		this.inventory.push(item);
+	};
+	
 	this.level_skill = function(skill) {
 		if(this.level_points > 0) {
 			if(skill === "health") {
 				this.max_health += 2;
+				this.health = this.max_health;
 				this.level_points -= 1;
 			} else if (skill === "attack") {
 				this.attack += 1;
