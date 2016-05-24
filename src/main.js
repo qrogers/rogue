@@ -5,6 +5,9 @@ context = canvas.getContext('2d');
 
 //TODO: Use screen size to determine canvas size
 //TODO: Create ESC menu
+//TODO: Set exit minimum distance away
+//TODO: Tutorial
+//TODO: Death Screen
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;

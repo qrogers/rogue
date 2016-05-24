@@ -27,7 +27,17 @@ function hud(x, y, width, height) {
 	this.pop_up_text = [];
 	this.buttons = [];
 	
-	this.story_texts = [["LEVEL 1 Story","More story","EVEN MORE STORY"], ["LEVEL 2 Story"], ["LEVEL 3 Story"]];
+	this.story_texts = [["Your first asignment",
+						 "Hello,",
+						 "Your mission is to infiltrate",
+						 "the network and do horrible",
+						 "things to it.",
+						 "Like, really bad things",
+						 "Good luck.",
+						 "    -Your employer"],
+						 
+						 ["LEVEL 2 Story"],
+						 ["LEVEL 3 Story"]];
 	
 	var OSName="Unknown OS";
 	if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
@@ -37,16 +47,37 @@ function hud(x, y, width, height) {
 
 	this.set_message = function(message) {
 		this.messages.push(message);
-		if(this.messages.length >= this.height / this.font_size / 2) {
+		if(this.messages.length >= 14) {
 			this.messages.shift();
 		}
 	};
 
 	this.init_menu = function() {
-		this.buttons.push(new button(40, 40, 122, 40, "Next Level", this.next_level_button));
-		this.buttons.push(new button(40, 84, 122, 40, "+ Health", this.increase_health_button));
-		this.buttons.push(new button(166, 84, 122, 40, "+ Attack", this.increase_attack_button));
-		this.buttons.push(new button(292, 84, 122, 40, "+ Skill", this.increase_skill_button));
+		this.buttons.push(new button(160, 640, 170, 40, " Begin Attack", this.next_level_button, "#FF0000"));
+		
+		//Names: Credentials
+		
+		this.buttons.push(new button(500, 160, 250, 40, " Decryption", this.increase_health_button));
+		this.buttons.push(new button(500, 260, 250, 40, " Threading", this.increase_attack_button));
+		this.buttons.push(new button(500, 360, 250, 40, " Runtime", this.increase_skill_button));
+		this.buttons.push(new button(500, 460, 250, 40, " Detect Fail Points", this.increase_skill_button));
+		this.buttons.push(new button(500, 560, 250, 40, " Decompile", this.increase_skill_button));
+		this.buttons.push(new button(500, 660, 250, 40, " Asyncronous Combat", this.increase_skill_button));
+		
+		this.buttons.push(new button(810, 160, 250, 40, " Encoding", this.increase_health_button));
+		this.buttons.push(new button(810, 260, 250, 40, " Security Permission", this.increase_health_button));
+		this.buttons.push(new button(810, 360, 250, 40, " Authentication", this.increase_health_button));
+		this.buttons.push(new button(810, 460, 250, 40, " Failsafes", this.increase_health_button));
+		this.buttons.push(new button(810, 560, 250, 40, " Redundent Systems", this.increase_health_button));
+		this.buttons.push(new button(810, 660, 250, 40, " Process Respawning", this.increase_health_button));
+		
+		this.buttons.push(new button(1150, 160, 250, 40, " SSH Monitoring", this.increase_health_button));
+		this.buttons.push(new button(1150, 260, 250, 40, " Remote Server", this.increase_health_button));
+		this.buttons.push(new button(1150, 360, 250, 40, " Backdoor Connection", this.increase_health_button));
+		this.buttons.push(new button(1150, 460, 250, 40, " SMTP Access", this.increase_health_button));
+		this.buttons.push(new button(1150, 560, 250, 40, " System Memory", this.increase_health_button));
+		this.buttons.push(new button(1150, 660, 250, 40, " User Logs", this.increase_health_button));
+		
 		this.messages = [];
 	};
 	
@@ -54,7 +85,7 @@ function hud(x, y, width, height) {
 		context.fillStyle = MAIN_COLOR;
 		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
-		context.rect(20, 20, 100, 100);
+		context.rect(20, 20, 200, 100);
 		context.fillText("press space to dismiss", 40, 120);
 		context.stroke();
 		for(var i = 0; i < this.pop_up_text.length; i++) {
@@ -68,12 +99,10 @@ function hud(x, y, width, height) {
 		} else if(state === "menu") {
 			this.draw_menu();
 		}
-		context.fillText("HEALTH: " + player.health + "/" + player.max_health, this.x + 20, this.y + 40);
-		context.fillText("XP: " + player.xp + "/" + player.xpn, this.x + 200, this.y + 40);
-		context.fillText("ATTACK: " + player.attack, this.x + 20, this.y + 80);
-		context.fillText("SKILL: " + player.skill, this.x + 200, this.y + 80);
-		context.fillText("Skill Points: " + player.level_points, this.x + 20, this.y + 720);
-		context.fillText("Money: " + player.money, this.x + 20, this.y + 740);
+		console.log();
+		context.fillText("Detection Level: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
+		context.fillText("Code Fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
+		//context.fillText("Code Snippets: " + player.level_points, this.x + 20, this.y + 720);
 	};
 	
 	this.draw_game = function() {
@@ -88,10 +117,14 @@ function hud(x, y, width, height) {
 		context.rect(this.x, this.y, this.width, this.height);
 		context.stroke();
 		for(var i = 0; i < this.messages.length; i++) {
-			context.fillText(this.messages[i], this.x + 20, this.y + 120 + (20 * i));
+			context.fillText(this.messages[i], this.x + 20, this.y + 150 + (20 * i));
 		}
 		if(this.pop_up_text.length > 0) {
 			this.pop_up();
+		}
+		context.fillText("Hostile Programs:", this.x + 20, this.y + 480);
+		for(var i = 0; i < player.current_room.enemies.length; i ++) {
+			context.fillText(player.current_room.enemies[i].name + ' ' + player.current_room.enemies[i].health, this.x + 20, this.y + 500 + (i * 20));
 		}
 	};
 
@@ -105,28 +138,85 @@ function hud(x, y, width, height) {
 		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
 		context.rect(20, 20, canvas.width - 40, canvas.height - 40);
+		context.rect(40, 40, 400, canvas.height - 80);
+		context.rect(460, 40, 1000, canvas.height - 80);
+		context.rect(1480, 40, 330, canvas.height - 80);
 		context.stroke();
-		for(var i = 0; i < this.story_texts[level].length; i++) {
-			context.fillText(this.story_texts[level][i], 550, 300 + (i * 20));
+		
+		context.fillText("-----email-----", 140, 65);
+		context.fillText("[----------new message----------]", 41, 100);
+		context.fillText(this.story_texts[level][0], 80, 130);
+		for(var i = 1; i < this.story_texts[level].length; i++) {
+			context.fillText(this.story_texts[level][i], 80, 160 + (i * 20));
 		}
-		context.fillText("Controls:", 800, 450);
-		context.fillText("W: Move up", 840, 470);
-		context.fillText("A: Move left", 840, 490);
-		context.fillText("S: Move down", 840, 510);
-		context.fillText("D: Move right", 840, 530);
-		context.fillText("Move into enemies to attack", 840, 550);
-		context.fillText("Player", 1200, 400);
-		context.fillText("Enemy", 1200, 440);
-		context.fillText("Chest", 1200, 480);
-		context.fillText("Exit", 1200, 520);
-		context.fillStyle = PLAYER_COLOR;
-		context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
-		context.fillStyle = "#FF0000";
-		context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
-		context.fillStyle = CHEST_COLOR;
-		context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);
-		context.fillStyle = EXIT_COLOR;
-		context.fillRect(1200, 525, SPACE_SIZE, SPACE_SIZE);
+		context.fillText("[----------end message----------]", 41, 170 + (this.story_texts[level].length * 20));
+		
+		context.fillText("------script console------", 840, 70);
+		
+		context.fillText("code snippets --> " + player.level_points, 480, 100);
+		context.fillText("[---targeted scripts---]", 480, 130);
+		context.fillText("[----protective scripts----]", 780, 130);
+		context.fillText("[------misc scripts------]", 1130, 130);
+		
+		context.fillText("1", 475, 182);
+		context.fillText("1", 475, 282);
+		context.fillText("1", 475, 382);
+		context.fillText("1", 475, 482);
+		context.fillText("3", 475, 582);
+		context.fillText("3", 475, 682);
+		
+		context.fillText("1", 785, 182);
+		context.fillText("1", 785, 282);
+		context.fillText("1", 785, 382);
+		context.fillText("1", 785, 482);
+		context.fillText("3", 785, 582);
+		context.fillText("3", 785, 682);
+		
+		context.fillText("2", 1125, 182);
+		context.fillText("2", 1125, 282);
+		context.fillText("2", 1125, 382);
+		context.fillText("2", 1125, 482);
+		context.fillText("2", 1125, 582);
+		context.fillText("2", 1125, 682);
+		
+		context.font = 10 + "px Lucida Console";
+		context.fillText("-cost-", 462, 150);
+		
+		context.font = 15 + "px Lucida Console";
+		context.fillText("Increase ability to take", 500, 220);
+		context.fillText("down defensive programs", 500, 240);
+		context.fillText("Run script more effeciently", 500, 320);
+		context.fillText("to better combat attackers", 500, 340);
+		context.fillText("Quicker excution to deal", 500, 420);
+		context.fillText("with fast programs better", 500, 440);
+		context.fillText("Improve ability to find and", 500, 520);
+		context.fillText("exploit program weakness", 500, 540);
+		context.fillText("Deconstruct failing programs", 500, 620);
+		context.fillText("to delete them as they fail", 500, 640);
+		context.fillText("Run attack scripts in async", 500, 720);
+		context.fillText("to massivly increase offense", 500, 740);
+		context.font = this.font_size + "px Lucida Console";
+		
+		context.fillText("------hack status------", 1510, 70);
+		
+		// context.fillText("Controls:", 800, 450);
+		// context.fillText("W: Move up", 840, 470);
+		// context.fillText("A: Move left", 840, 490);
+		// context.fillText("S: Move down", 840, 510);
+		// context.fillText("D: Move right", 840, 530);
+		// context.fillText("Move into enemies to attack", 840, 550);
+		// context.fillText("Player", 1200, 400);
+		// context.fillText("Enemy", 1200, 440);
+		// context.fillText("Chest", 1200, 480);
+		// context.fillText("Exit", 1200, 520);
+		// context.fillStyle = PLAYER_COLOR;
+		// context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
+		// context.fillStyle = "#FF0000";
+		// context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
+		// context.fillStyle = CHEST_COLOR;
+		// context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);
+		// context.fillStyle = EXIT_COLOR;
+		// context.fillRect(1200, 525, SPACE_SIZE, SPACE_SIZE);
 		for(var i = 0; i < this.buttons.length; i++) {
 			this.buttons[i].draw();
 		}

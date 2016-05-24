@@ -1,11 +1,14 @@
-function button(x, y, width, height, text, click) {
+function button(x, y, width, height, text, click, color) {
 	this.x = x;
 	this.y = y;
+	this.color = color;
+	if(typeof this.color === 'undefined') {
+		this.color = MAIN_COLOR;
+	}
 	this.width  = width;
 	this.height = height;
 	this.text = text;
 	this.click = click;
-	this.color = MAIN_COLOR;
 	
 	this.clicked = function(x, y) {
 		if(this.x < x && this.y < y && this.x + this.width > x && this.y + this.height > y) {
