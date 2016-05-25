@@ -7,6 +7,7 @@ enemy_name = "cron";
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
 enemies[enemy_name]["attack"] = 2;
+enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 7;
 enemies[enemy_name]["skill"] = 12;
 enemies[enemy_name]["xp_bounty"] = 15;
@@ -18,6 +19,7 @@ enemy_name = "firewall";
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
 enemies[enemy_name]["attack"] = 1;
+enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 20;
 enemies[enemy_name]["skill"] = 5;
 enemies[enemy_name]["xp_bounty"] = 20;
@@ -29,6 +31,7 @@ enemy_name = "anti_virus";
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
 enemies[enemy_name]["attack"] = 3;
+enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 6;
 enemies[enemy_name]["skill"] = 8;
 enemies[enemy_name]["xp_bounty"] = 22;
@@ -41,6 +44,7 @@ function enemy(x, y, room, ai, type) {
 	this.type = type;
 	this.name         = type["name"];
 	this.attack       = type["attack"];
+	this.defense      = type["defense"];
 	this.health       = type["health"];
 	this.skill        = type["skill"];
 	this.xp_bounty    = type["xp_bounty"];
@@ -69,7 +73,10 @@ function enemy(x, y, room, ai, type) {
 	};
 
 	this.take_damage = function(damage) {
-		this.health -= damage;
+		this.health -= damage - (this.defense * (1 - player.penetration));
+		if(this.health <= 7 && player.abilities.includes("decompile")) {
+			this.health = 0;
+		}
 		if(this.health <= 0) {
 			hud.set_message("Enemy killed");
 		}

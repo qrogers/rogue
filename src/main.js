@@ -5,7 +5,6 @@ context = canvas.getContext('2d');
 
 //TODO: Use screen size to determine canvas size
 //TODO: Create ESC menu
-//TODO: Set exit minimum distance away
 //TODO: Tutorial
 //TODO: Death Screen
 
@@ -27,7 +26,7 @@ var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
 //var ENEMY_COLOR = "#FF0000";
 var CHEST_COLOR = "#BBEE00";
-var EXIT_COLOR = "#AADDAA";
+var EXIT_COLOR = "#FFFFFF";
 
 var TICK_KEY_VALUES = [83, 68, 87, 65];
 
@@ -36,7 +35,7 @@ document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
 var player = new player();
-var state = "menu";
+var state = "game";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
 var level = 0;
@@ -66,7 +65,7 @@ function new_level() {
 	var min_room_height = random_range(3, 5);
 	var max_room_height = random_range(6, 9);
 	
-	var r1 = new room(random_range(0, BLOCKS_WIDTH - 1), random_range(0, BLOCKS_HEIGHT - 1), min_room_width, min_room_height);
+	var r1 = new room(random_range(0, 1), random_range(0, 1), min_room_width, min_room_height);
 	var num_rooms = 1;
 	var target_num_rooms = 25;
 	
@@ -90,7 +89,7 @@ function new_level() {
 	var exit_x;
 	var exit_y;
 	while(true) {
-		exit_x = random_range(0, BLOCKS_WIDTH  - 1);
+		exit_x = random_range(BLOCKS_WIDTH - 1, BLOCKS_WIDTH  - 1);
 		exit_y = random_range(0, BLOCKS_HEIGHT - 1);
 		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
 			break;
@@ -144,8 +143,6 @@ function draw() {
 	        for (var j = 0; j < 10; j++) {
 	            if(typeof rooms[i][j] !== 'undefined') {
 	                rooms[i][j].draw();
-	                //console.log(i + " " + j);
-	                //console.log(rooms[i][j]);
 	            }
 	        }
 	    }

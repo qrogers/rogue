@@ -6,13 +6,15 @@ function player() {
 	this.max_health = 12;
 	this.health = this.max_health;
 	this.skill = 25;
+	//Pen = % of Defense ignored
+	this.penetration = 0;
+	this.defense = 1;
 	this.xp = 0;
 	this.xpn = 100;
-	this.money = 100;
+	this.abilities = [];
 	this.level = 1;
-	this.level_points = 1;
+	this.level_points = 100;
 	this.current_room = null;
-	this.inventroy = [];
 	
 	var space_border = 1;
 	
@@ -35,7 +37,7 @@ function player() {
 	};
 
 	this.take_damage = function(damage) {
-		this.health -= damage;
+		this.health -= damage - this.defense;
 		if(this.health <= 0) {
 			transition_state("menu");
 			this.health = this.max_health;
@@ -60,22 +62,23 @@ function player() {
 		hud.set_message("Level up");
 	};
 	
-	this.add_to_onventory = function(item) {
-		this.inventory.push(item);
+	this.add_ability = function(ability) {
+		if(this.level_points >= 3) {
+			this.abilities.push(ability);
+		}
 	};
 	
-	this.level_skill = function(skill) {
+	this.level_skill = function(skill, amount) {
 		if(this.level_points > 0) {
 			if(skill === "health") {
-				this.max_health += 2;
+				this.max_health += amount;
 				this.health = this.max_health;
-				this.level_points -= 1;
 			} else if (skill === "attack") {
-				this.attack += 1;
-				this.level_points -= 1;
+				this.attack += amount;
 			} else if (skill === "skill") {
-				this.skill += 3;
-				this.level_points -= 1;
+				this.skill += amount;
+			} else if (skill === "penetration") {
+				this.penetration += amount;			
 			}
 		}
 	};

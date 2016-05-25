@@ -1,23 +1,5 @@
 function hud(x, y, width, height) {
 	
-	this.next_level_button = function() {
-		hud.buttons = [];
-		new_level();
-		transition_state("game");
-	};
-	
-	this.increase_health_button = function() {
-		player.level_skill("health");
-	};
-	
-	this.increase_attack_button = function() {
-		player.level_skill("attack");
-	};
-	
-	this.increase_skill_button = function() {
-		player.level_skill("skill");
-	};
-	
 	this.x = x;
 	this.y = y;
 	this.font_size = 20;
@@ -26,6 +8,58 @@ function hud(x, y, width, height) {
 	this.messages = [];
 	this.pop_up_text = [];
 	this.buttons = [];
+	
+	this.next_level_button = function() {
+		hud.buttons = [];
+		new_level();
+		transition_state("game");
+	};
+	
+	this.decryption_button = function() {
+		if(player.level_points > 0) {
+			player.level_points -= 1;
+			player.level_skill("penetration", .1);
+		}
+	};
+	
+	this.threading_button = function() {
+		if(player.level_points > 0) {
+			player.level_points -= 1;
+			player.level_skill("attack", 2);
+		}
+	};
+	
+	this.runtime_button = function() {
+		if(player.level_points > 0) {
+			player.level_points -= 1;
+			player.level_skill("penetration", .05);
+			player.level_skill("attack", 1);
+		}
+	};
+	
+	this.decompile_button = function() {
+		find_func = function(button) {
+			return button.text === " Decompile";
+		};
+		if(player.level_points > 0) {
+			player.level_points -= 3;
+			player.add_ability("decompile");
+			hud.buttons.splice(hud.buttons.findIndex(find_func), 1);
+		}
+	};
+	
+	this.asyncronous_cpu_button = function() {
+		find_func = function(button) {
+			return button.text === " Asyncronous CPU";
+		};
+		if(player.level_points > 0) {
+			player.level_points -= 3;
+			player.add_ability("asyncronous_cpu");
+			player.level_skill("penetration", .2);
+			player.level_skill("attack", 4);
+			hud.buttons.splice(hud.buttons.findIndex(find_func), 1);
+		}
+	};
 	
 	this.story_texts = [["Your first asignment",
 						 "Hello,",
@@ -39,11 +73,11 @@ function hud(x, y, width, height) {
 						 ["LEVEL 2 Story"],
 						 ["LEVEL 3 Story"]];
 	
-	var OSName="Unknown OS";
-	if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
-	if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
-	if (navigator.appVersion.indexOf("X11")!=-1) OSName="UNIX";
-	if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
+	var OSName = "Unknown OS";
+	if(navigator.appVersion.indexOf("Win")!=-1) OSName = "Windows";
+	if(navigator.appVersion.indexOf("Mac")!=-1) OSName = "MacOS";
+	if(navigator.appVersion.indexOf("X11")!=-1) OSName = "UNIX";
+	if(navigator.appVersion.indexOf("Linux")!=-1) OSName = "Linux";
 
 	this.set_message = function(message) {
 		this.messages.push(message);
@@ -57,26 +91,29 @@ function hud(x, y, width, height) {
 		
 		//Names: Credentials
 		
-		this.buttons.push(new button(500, 160, 250, 40, " Decryption", this.increase_health_button));
-		this.buttons.push(new button(500, 260, 250, 40, " Threading", this.increase_attack_button));
-		this.buttons.push(new button(500, 360, 250, 40, " Runtime", this.increase_skill_button));
-		this.buttons.push(new button(500, 460, 250, 40, " Detect Fail Points", this.increase_skill_button));
-		this.buttons.push(new button(500, 560, 250, 40, " Decompile", this.increase_skill_button));
-		this.buttons.push(new button(500, 660, 250, 40, " Asyncronous Combat", this.increase_skill_button));
+		this.buttons.push(new button(500, 160, 250, 40, " Decryption", this.decryption_button));
+		this.buttons.push(new button(500, 260, 250, 40, " Threading", this.threading_button));
+		this.buttons.push(new button(500, 360, 250, 40, " Runtime", this.runtime_button));
+		
+		//Instakill enemies that drop below 8 health
+		if(!player.abilities.includes("decompile")) {
+			this.buttons.push(new button(500, 560, 250, 40, " Decompile", this.decompile_button));
+		}
+		
+		if(!player.abilities.includes("asyncronous_cpu")) {
+			this.buttons.push(new button(500, 660, 250, 40, " Asyncronous CPU", this.asyncronous_cpu_button));
+		}
 		
 		this.buttons.push(new button(810, 160, 250, 40, " Encoding", this.increase_health_button));
 		this.buttons.push(new button(810, 260, 250, 40, " Security Permission", this.increase_health_button));
 		this.buttons.push(new button(810, 360, 250, 40, " Authentication", this.increase_health_button));
-		this.buttons.push(new button(810, 460, 250, 40, " Failsafes", this.increase_health_button));
 		this.buttons.push(new button(810, 560, 250, 40, " Redundent Systems", this.increase_health_button));
 		this.buttons.push(new button(810, 660, 250, 40, " Process Respawning", this.increase_health_button));
 		
 		this.buttons.push(new button(1150, 160, 250, 40, " SSH Monitoring", this.increase_health_button));
-		this.buttons.push(new button(1150, 260, 250, 40, " Remote Server", this.increase_health_button));
-		this.buttons.push(new button(1150, 360, 250, 40, " Backdoor Connection", this.increase_health_button));
-		this.buttons.push(new button(1150, 460, 250, 40, " SMTP Access", this.increase_health_button));
-		this.buttons.push(new button(1150, 560, 250, 40, " System Memory", this.increase_health_button));
-		this.buttons.push(new button(1150, 660, 250, 40, " User Logs", this.increase_health_button));
+		this.buttons.push(new button(1150, 260, 250, 40, " Backdoor Connection", this.increase_health_button));
+		this.buttons.push(new button(1150, 360, 250, 40, " System Memory", this.increase_health_button));
+		this.buttons.push(new button(1150, 460, 250, 40, " User Logs", this.increase_health_button));
 		
 		this.messages = [];
 	};
@@ -161,14 +198,26 @@ function hud(x, y, width, height) {
 		context.fillText("1", 475, 182);
 		context.fillText("1", 475, 282);
 		context.fillText("1", 475, 382);
-		context.fillText("1", 475, 482);
-		context.fillText("3", 475, 582);
-		context.fillText("3", 475, 682);
+		
+		if(!player.abilities.includes("decompile")) {
+			context.fillText("3", 475, 582);
+			context.font = 15 + "px Lucida Console";
+			context.fillText("Deconstruct failing programs", 500, 620);
+			context.fillText("to delete them as they fail", 500, 640);
+		}
+		
+		if(!player.abilities.includes("asyncronous_cpu")) {
+			context.fillText("3", 475, 682);
+			context.font = 15 + "px Lucida Console";
+			context.fillText("Run attack scripts in async", 500, 720);
+			context.fillText("to massivly increase offense", 500, 740);
+		}
+		
+		context.font = this.font_size + "px Lucida Console";
 		
 		context.fillText("1", 785, 182);
 		context.fillText("1", 785, 282);
 		context.fillText("1", 785, 382);
-		context.fillText("1", 785, 482);
 		context.fillText("3", 785, 582);
 		context.fillText("3", 785, 682);
 		
@@ -176,25 +225,20 @@ function hud(x, y, width, height) {
 		context.fillText("2", 1125, 282);
 		context.fillText("2", 1125, 382);
 		context.fillText("2", 1125, 482);
-		context.fillText("2", 1125, 582);
-		context.fillText("2", 1125, 682);
 		
 		context.font = 10 + "px Lucida Console";
+		
 		context.fillText("-cost-", 462, 150);
 		
 		context.font = 15 + "px Lucida Console";
+		
 		context.fillText("Increase ability to take", 500, 220);
 		context.fillText("down defensive programs", 500, 240);
 		context.fillText("Run script more effeciently", 500, 320);
 		context.fillText("to better combat attackers", 500, 340);
-		context.fillText("Quicker excution to deal", 500, 420);
-		context.fillText("with fast programs better", 500, 440);
-		context.fillText("Improve ability to find and", 500, 520);
-		context.fillText("exploit program weakness", 500, 540);
-		context.fillText("Deconstruct failing programs", 500, 620);
-		context.fillText("to delete them as they fail", 500, 640);
-		context.fillText("Run attack scripts in async", 500, 720);
-		context.fillText("to massivly increase offense", 500, 740);
+		context.fillText("Faster execution speed for", 500, 420);
+		context.fillText("overall better attacks ", 500, 440);
+		
 		context.font = this.font_size + "px Lucida Console";
 		
 		context.fillText("------hack status------", 1510, 70);
