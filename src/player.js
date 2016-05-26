@@ -14,6 +14,7 @@ function player() {
 	this.abilities = [];
 	this.level = 1;
 	this.level_points = 100;
+	this.respawn = false;
 	this.current_room = null;
 	
 	var space_border = 1;
@@ -37,10 +38,19 @@ function player() {
 	};
 
 	this.take_damage = function(damage) {
-		this.health -= damage - this.defense;
-		if(this.health <= 0) {
-			transition_state("menu");
-			this.health = this.max_health;
+		if(damage - this.defense > 0) {
+			this.health -= damage - this.defense;
+			if(this.health <= 0) {
+				if(this.respawn) {
+					this.health = 5;
+					hud.set_message("critical failure recoverd");
+				} else {
+					transition_state("menu");
+					this.health = this.max_health;
+				}
+			}
+		} else {
+			hud.set_message("took no damage");
 		}
 	};
 
@@ -79,6 +89,8 @@ function player() {
 				this.skill += amount;
 			} else if (skill === "penetration") {
 				this.penetration += amount;			
+			}  else if (skill === "defense") {
+				this.defense += amount;			
 			}
 		}
 	};

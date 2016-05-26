@@ -45,7 +45,7 @@ function room(x, y, width, height) {
         if(quantity > (this.width - 2) * (this.height - 2)) {
         	quantity = (this.width - 2) * (this.height - 2);
         }
-        var keys = Object.keys(enemies)
+        var keys = Object.keys(enemies);
         for(var i = 0; i < quantity; i++) {
         	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
         	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, this.ai.seek_and_attack_player, enemies[keys[keys.length * Math.random() << 0]]);
@@ -140,7 +140,6 @@ function room(x, y, width, height) {
     this.kill = function(enemy) {
     	this.enemies.splice(this.enemies.indexOf(enemy), 1);
         player.gain_xp(enemy.xp_bounty);
-        player.gain_money(enemy.money_bounty);
     };
 
     this.set_door = function(direction, room) {
@@ -187,8 +186,8 @@ function room(x, y, width, height) {
         context.strokeStyle = MAIN_COLOR;
         context.lineWidth="2";
         var space_border = 2;
-        if(this.seen) {
-            if(player.current_room === this) {
+        if(this.seen || debug) {
+            if(player.current_room === this || debug) {
                 context.rect(this.xcor, this.ycor, this.width * SPACE_SIZE, this.height * SPACE_SIZE);
                 context.stroke();
                 for(var i = 0; i < this.floor.length; i++) {
@@ -242,14 +241,14 @@ function room(x, y, width, height) {
         }
     };
 
-    this.spawn_links = function(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height) {
-        var spawn_weight = 70;
-        var relink_weight = 50;
+    this.spawn_links = function(min_width, max_width, min_height, max_height, spawn_chance, relink_chance) {
+        var spawn_weight = spawn_chance;
+        var relink_weight = relink_chance;
         var min_room_width = min_width;
         var max_room_width = max_width;
         var min_room_height = min_height;
         var max_room_height = max_height;
-        if(num_rooms > target_num_rooms) {
+        if(num_rooms >= target_num_rooms) {
             return;
         }
         if(random_range(0, 100) <= spawn_weight) {
@@ -258,12 +257,18 @@ function room(x, y, width, height) {
                     this.set_door("north", new room(x, y - 1, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.north.set_door("south", this);
                     num_rooms += 1;
-                    this.north.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
+                    if(num_rooms >= target_num_rooms) {
+            			return;
+        			}
+                    this.north.spawn_links(min_width, max_width, min_height, max_height, spawn_weight, relink_weight);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("north", rooms[x][y - 1]);
                     this.north.set_door("south", this);
                 }
             }
+        }
+        if(num_rooms >= target_num_rooms) {
+            return;
         }
         if(random_range(0, 100) <= spawn_weight) {
             if(this.y < BLOCKS_HEIGHT - 1) {
@@ -271,12 +276,18 @@ function room(x, y, width, height) {
                     this.set_door("south", new room(x, y + 1, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.south.set_door("north", this);
                     num_rooms += 1;
-                    this.south.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
+                    if(num_rooms >= target_num_rooms) {
+            			return;
+        			}
+                    this.south.spawn_links(min_width, max_width, min_height, max_height, spawn_weight, relink_weight);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("south", rooms[x][y + 1]);
                     this.south.set_door("north", this);
                 }
             }
+        }
+        if(num_rooms >= target_num_rooms) {
+            return;
         }
         if(random_range(0, 100) <= spawn_weight) {
             if(this.x < BLOCKS_WIDTH - 1) {
@@ -284,12 +295,18 @@ function room(x, y, width, height) {
                     this.set_door("east", new room(x + 1, y, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.east.set_door("west", this);
                     num_rooms += 1;
-                    this.east.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
+                    if(num_rooms >= target_num_rooms) {
+            			return;
+        			}
+                    this.east.spawn_links(min_width, max_width, min_height, max_height, spawn_weight, relink_weight);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("east", rooms[x + 1][y]);
                     this.east.set_door("west", this);
                 }
             }
+        }
+        if(num_rooms >= target_num_rooms) {
+            return;
         }
         if(random_range(0, 100) <= spawn_weight) {
             if(this.x > 0) {
@@ -297,7 +314,10 @@ function room(x, y, width, height) {
                     this.set_door("west", new room(x - 1, y, random_range(min_room_width, max_room_width), random_range(min_room_height, max_room_height)));
                     this.west.set_door("east", this);
                     num_rooms += 1;
-                    this.west.spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
+                    if(num_rooms >= target_num_rooms) {
+            			return;
+        			}
+                    this.west.spawn_links(min_width, max_width, min_height, max_height, spawn_weight, relink_weight);
                 } else if(random_range(0, 100) <= relink_weight){
                     this.set_door("west", rooms[x - 1][y]);
                     this.west.set_door("east", this);

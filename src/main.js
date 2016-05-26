@@ -7,6 +7,7 @@ context = canvas.getContext('2d');
 //TODO: Create ESC menu
 //TODO: Tutorial
 //TODO: Death Screen
+//TODO: Set exit minmum distance rom start
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -30,6 +31,12 @@ var EXIT_COLOR = "#FFFFFF";
 
 var TICK_KEY_VALUES = [83, 68, 87, 65];
 
+//new_level(mirw, marw, mirh, marh, tnr, me, nc)
+var level_data = [
+//[3, 3, 4, 4, 10, 1, 1],
+[5, 3, 8, 4,  8, 2, 1, 50, 50]
+];
+
 document.addEventListener("keydown", handle_keypress);
 document.addEventListener("mouseup", handle_mouse_up);
 
@@ -39,13 +46,17 @@ var state = "game";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
 var level = 0;
+var num_rooms = 1;
+var target_num_rooms = 1;
+
+var debug = true;
 
 //Prevent enemies from moving, used when player enters new room;
 var enemy_move_lock = false;
 
-var max_enemies = 2;
+var current_level_data = level_data[level];
+new_level(current_level_data[0], current_level_data[1], current_level_data[2], current_level_data[3], current_level_data[4], current_level_data[5], current_level_data[6], current_level_data[7], current_level_data[8]);
 
-new_level();
 hud.init_menu();
 draw();
 
@@ -54,31 +65,32 @@ function next_level() {
 	transition_state("menu");
 }
 
-function new_level() {
+function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_weight) {
 	rooms = [];
 	for(var i = 0; i < BLOCKS_WIDTH; i++) {
 	    rooms.push([]);
 	}
 	
-	var min_room_width = random_range(3, 5);
-	var max_room_width = random_range(6, 9);
-	var min_room_height = random_range(3, 5);
-	var max_room_height = random_range(6, 9);
+	var min_room_width  = mirw;
+	var max_room_width  = marw;
+	var min_room_height = mirh;
+	var max_room_height = marh;
 	
 	var r1 = new room(random_range(0, 1), random_range(0, 1), min_room_width, min_room_height);
-	var num_rooms = 1;
-	var target_num_rooms = 25;
+	num_rooms = 1;
+	target_num_rooms = tnr;
 	
-	r1.spawn_links(num_rooms, target_num_rooms, min_room_width, max_room_width, min_room_height, max_room_height);
+	var max_enemies = me;
+	var num_chests = nc;
+	
+	r1.spawn_links(min_room_width, max_room_width, min_room_height, max_room_height, spawn_weight, relink_weight);
 	
 	while(num_rooms < target_num_rooms){ 
-	   spawn_rooms(num_rooms, target_num_rooms, min_room_width, max_room_width, min_room_height, max_room_height);
-	   num_rooms += 1;
+	   spawn_rooms(min_room_width, max_room_width, min_room_height, max_room_height, spawn_weight, relink_weight);
 	}
 	
-	max_enemies += .5;
 	spawn_enemies(Math.floor(max_enemies));
-	spawn_chests(2);
+	spawn_chests(nc);
 	player.current_room = r1;
 	player.x = 1;
 	player.y = 1;
@@ -89,7 +101,7 @@ function new_level() {
 	var exit_x;
 	var exit_y;
 	while(true) {
-		exit_x = random_range(BLOCKS_WIDTH - 1, BLOCKS_WIDTH  - 1);
+		exit_x = random_range(0, BLOCKS_WIDTH  - 1);
 		exit_y = random_range(0, BLOCKS_HEIGHT - 1);
 		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
 			break;
@@ -102,11 +114,11 @@ function new_level() {
 	player.health = player.max_health;
 }
 
-function spawn_rooms(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height) {
+function spawn_rooms(min_width, max_width, min_height, max_height, spawn_weight, relink_weight) {
     for(var i = BLOCKS_WIDTH - 1; i >= 0; i--) {
         for(var j = BLOCKS_HEIGHT - 1; j >= 0; j--) {
             if(typeof rooms[i][j] !== "undefined") {
-                rooms[i][j].spawn_links(num_rooms, target_num_rooms, min_width, max_width, min_height, max_height);
+                rooms[i][j].spawn_links(min_width, max_width, min_height, max_height, spawn_weight, relink_weight);
                 return;
             }
         }
@@ -155,6 +167,10 @@ function transition_state(new_state) {
 	state = new_state;
 	if(state === "menu") {
 		hud.init_menu();
+	} else {
+		if(player.abilities.includes("process_respawning")) {
+			player.respawn = true;
+		}
 	}
 	draw();
 }

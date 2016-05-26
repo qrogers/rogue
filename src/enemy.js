@@ -11,7 +11,6 @@ enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 7;
 enemies[enemy_name]["skill"] = 12;
 enemies[enemy_name]["xp_bounty"] = 15;
-enemies[enemy_name]["money_bounty"] = 5;
 enemies[enemy_name]["color"] = "#FFFF11";
 
 enemy_name = "firewall";
@@ -23,7 +22,6 @@ enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 20;
 enemies[enemy_name]["skill"] = 5;
 enemies[enemy_name]["xp_bounty"] = 20;
-enemies[enemy_name]["money_bounty"] = 5;
 enemies[enemy_name]["color"] = "#FF1111";
 
 enemy_name = "anti_virus";
@@ -35,7 +33,6 @@ enemies[enemy_name]["defense"] = 2;
 enemies[enemy_name]["health"] = 6;
 enemies[enemy_name]["skill"] = 8;
 enemies[enemy_name]["xp_bounty"] = 22;
-enemies[enemy_name]["money_bounty"] = 5;
 enemies[enemy_name]["color"] = "#EE00FF";
 
 function enemy(x, y, room, ai, type) {
@@ -48,7 +45,6 @@ function enemy(x, y, room, ai, type) {
 	this.health       = type["health"];
 	this.skill        = type["skill"];
 	this.xp_bounty    = type["xp_bounty"];
-	this.money_bounty = type["money_bounty"];
 	this.color        = type["color"];
 	this.room = room;
 	this.ai = ai;
