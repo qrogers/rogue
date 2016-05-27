@@ -9,10 +9,17 @@ function hud(x, y, width, height) {
 	this.pop_up_text = [];
 	this.buttons = [];
 	
+	this.death_button_function = function() {
+		console.log("HERE");
+		transition_state("menu");
+	};
+	
+	this.death_button = new button(canvas.width / 2 - 60, canvas.height / 2 + 40, 113, 40, " Proceed", this.death_button_function, "#FF0000");
+	
 	this.next_level_button = function() {
 		hud.buttons = [];
 		var current_level_data = level_data[level];
-		new_level(current_level_data[0], current_level_data[1], current_level_data[2], current_level_data[3], current_level_data[4], current_level_data[5], current_level_data[6]);
+		new_level(current_level_data[0], current_level_data[1], current_level_data[2], current_level_data[3], current_level_data[4], current_level_data[5], current_level_data[6], current_level_data[7], current_level_data[8]);
 		transition_state("game");
 	};
 	
@@ -189,11 +196,13 @@ function hud(x, y, width, height) {
 			this.draw_game();
 		} else if(state === "menu") {
 			this.draw_menu();
+		} else if(state === "death") {
+			this.draw_death();
 		}
 		console.log();
 		context.fillStyle = MAIN_COLOR;
-		context.fillText("Detection Level: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
-		context.fillText("Code Fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
+		context.fillText("detection level: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
+		context.fillText("code fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
 		//context.fillText("Code Snippets: " + player.level_points, this.x + 20, this.y + 720);
 	};
 	
@@ -209,7 +218,7 @@ function hud(x, y, width, height) {
 		context.rect(this.x, this.y, this.width, this.height);
 		context.stroke();
 		for(var i = 0; i < this.messages.length; i++) {
-			context.fillText(this.messages[i], this.x + 20, this.y + 150 + (20 * i));
+			context.fillText(this.messages[i], this.x + 20, this.y + 170 + (20 * i));
 		}
 		if(this.pop_up_text.length > 0) {
 			this.pop_up();
@@ -217,18 +226,25 @@ function hud(x, y, width, height) {
 		context.fillText("Hostile Programs:", this.x + 20, this.y + 480);
 		for(var i = 0; i < player.current_room.enemies.length; i ++) {
 			context.fillStyle = MAIN_COLOR;
-			context.fillText(player.current_room.enemies[i].name + ' ' + player.current_room.enemies[i].health, this.x + 20, this.y + 500 + (i * 20));
+			context.fillText(player.current_room.enemies[i].name + ' ' + (Math.floor((player.current_room.enemies[i].health / player.current_room.enemies[i].max_health) * 100)) + "%", this.x + 20, this.y + 500 + (i * 20));
 			context.fillStyle = player.current_room.enemies[i].color;
 			context.fillRect(this.x + 2, this.y + 490 + (i * 20), SPACE_SIZE, SPACE_SIZE);
 		}
 	};
 
+	this.draw_death = function() {
+		context.font = this.font_size + "px Lucida Console";
+		context.strokeStyle = MAIN_COLOR;
+		context.fillStyle = MAIN_COLOR;
+		context.fillText(">intrusion detected", canvas.width / 2 - 100, 300);
+		context.fillText(">fatal error", canvas.width / 2 - 100, 320);
+		context.fillText(">connection terminated", canvas.width / 2 - 100, 340);
+		context.stroke();
+		this.death_button.draw();
+	};
+
 	this.draw_menu = function() {
-		if(OSName === "MacOS") {
-			context.font = this.font_size + "px Andale Mono";
-		} else if(OSName === "Windows") {
-			context.font = this.font_size + "px Lucida Console";
-		}
+		context.font = this.font_size + "px Lucida Console";
 		context.fillStyle = MAIN_COLOR;
 		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";

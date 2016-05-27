@@ -3,11 +3,17 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
-//TODO: Use screen size to determine canvas size
 //TODO: Create ESC menu
 //TODO: Tutorial
-//TODO: Death Screen
-//TODO: Set exit minmum distance rom start
+//TODO: Set exit minimum distance room start, maybe require key instead
+//TODO: Add enemies and control types that spawn
+//TODO: Add AI, give each enemy an AI
+//TODO: Add sound
+//TODO: Add story
+//TODO: Add levels
+//TODO: Balance
+//TODO: Sort out combat log
+//TODO: Expand on Chests
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -25,16 +31,16 @@ var BLOCKS_HEIGHT = Math.floor((canvas.height)                           / ((BLO
 var MAIN_COLOR = "#00FF00";
 var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
-//var ENEMY_COLOR = "#FF0000";
-var CHEST_COLOR = "#BBEE00";
+var CHEST_COLOR = "#AAAA22";
 var EXIT_COLOR = "#FFFFFF";
 
-var TICK_KEY_VALUES = [83, 68, 87, 65];
+var TICK_KEY_VALUES = [83, 68, 87, 65, 37, 38, 39, 40];
 
-//new_level(mirw, marw, mirh, marh, tnr, me, nc)
+//new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn weight, relink weight)
 var level_data = [
-//[3, 3, 4, 4, 10, 1, 1],
-[5, 3, 8, 4,  8, 2, 1, 50, 50]
+[3, 3, 5, 5,  6, 2, 1, 50, 50],
+[5, 6, 8, 7, 10, 2, 2, 20, 70],
+[4, 4, 6, 6, 12, 3, 3, 70, 80]
 ];
 
 document.addEventListener("keydown", handle_keypress);
@@ -42,14 +48,14 @@ document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
 var player = new player();
-var state = "game";
+var state = "menu";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
 var level = 0;
 var num_rooms = 1;
 var target_num_rooms = 1;
 
-var debug = true;
+var debug = false;
 
 //Prevent enemies from moving, used when player enters new room;
 var enemy_move_lock = false;
@@ -85,7 +91,7 @@ function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_wei
 	
 	r1.spawn_links(min_room_width, max_room_width, min_room_height, max_room_height, spawn_weight, relink_weight);
 	
-	while(num_rooms < target_num_rooms){ 
+	while(num_rooms < target_num_rooms) { 
 	   spawn_rooms(min_room_width, max_room_width, min_room_height, max_room_height, spawn_weight, relink_weight);
 	}
 	
@@ -103,7 +109,7 @@ function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_wei
 	while(true) {
 		exit_x = random_range(0, BLOCKS_WIDTH  - 1);
 		exit_y = random_range(0, BLOCKS_HEIGHT - 1);
-		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined") {
+		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined" && rooms[exit_x][exit_y] !== r1) {
 			break;
 		}
 	}
@@ -167,6 +173,7 @@ function transition_state(new_state) {
 	state = new_state;
 	if(state === "menu") {
 		hud.init_menu();
+		player.health = player.max_health;
 	} else {
 		if(player.abilities.includes("process_respawning")) {
 			player.respawn = true;
@@ -179,13 +186,13 @@ function handle_keypress(e) {
     if(state === "game") {
 	    var code = e.keyCode;
 	    var movement = [0, 0];
-	    if(code === 83) {
+	    if(code === 83 || code === 40) {
 	        movement = [0, 1];
-	    } else if(code === 68) {
+	    } else if(code === 68 || code === 39) {
 	        movement = [1, 0];
-	    } else if(code === 87) {
+	    } else if(code === 87 || code === 38) {
 	        movement = [0, -1];
-	    } else if(code === 65) {
+	    } else if(code === 65 || code === 37) {
 	        movement = [-1, 0];
 	    } else if(code === 32) {
 	    	hud.pop_up_text = [];
@@ -203,4 +210,5 @@ function handle_mouse_up(e) {
 	for(var i = 0; i < hud.buttons.length; i++) {
 		hud.buttons[i].clicked(e.clientX, e.clientY);
 	}
+	hud.death_button.clicked(e.clientX, e.clientY);
 }

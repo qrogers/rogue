@@ -13,7 +13,7 @@ function player() {
 	this.xpn = 100;
 	this.abilities = [];
 	this.level = 1;
-	this.level_points = 100;
+	this.level_points = 2;
 	this.respawn = false;
 	this.current_room = null;
 	
@@ -23,18 +23,17 @@ function player() {
 		if(Math.random() <= this.skill / enemy.skill) {
 			if(random_range(0, 100) <= this.skill - enemy.skill) {
 				enemy.recive_attack(this.attack * 2, this);
-				hud.set_message("Critical hit");
 			} else {
 				enemy.recive_attack(this.attack, this);
 			}
 		} else {
-			hud.set_message("You missed");
+			hud.set_message("attack failed");
 		}
 	};
 
 	this.recive_attack = function(damage) {
 		this.take_damage(damage);
-		hud.set_message("You were attacked, took " + damage + " damage");
+		hud.set_message("damage taken");
 	};
 
 	this.take_damage = function(damage) {
@@ -45,12 +44,11 @@ function player() {
 					this.health = 5;
 					hud.set_message("critical failure recoverd");
 				} else {
-					transition_state("menu");
-					this.health = this.max_health;
+					transition_state("death");
 				}
 			}
 		} else {
-			hud.set_message("took no damage");
+			hud.set_message("enemy attack ineffective");
 		}
 	};
 

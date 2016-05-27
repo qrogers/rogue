@@ -12,7 +12,6 @@ function button(x, y, width, height, text, click, color) {
 	
 	this.clicked = function(x, y) {
 		if(this.x < x && this.y < y && this.x + this.width > x && this.y + this.height > y) {
-			console.log(this.click);
 			this.click();
 			draw();
 		}

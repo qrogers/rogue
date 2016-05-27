@@ -2,40 +2,45 @@ var enemies = new Object();
 
 var enemy_name = "";
 
+var ai_obj = new ai();
+
 enemy_name = "cron";
 
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
-enemies[enemy_name]["attack"] = 2;
-enemies[enemy_name]["defense"] = 2;
-enemies[enemy_name]["health"] = 7;
-enemies[enemy_name]["skill"] = 12;
-enemies[enemy_name]["xp_bounty"] = 15;
+enemies[enemy_name]["attack"] = 3;
+enemies[enemy_name]["defense"] = 1;
+enemies[enemy_name]["health"] = 8;
+enemies[enemy_name]["skill"] = 15;
+enemies[enemy_name]["xp_bounty"] = 9;
 enemies[enemy_name]["color"] = "#FFFF11";
+enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
 
 enemy_name = "firewall";
 
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
-enemies[enemy_name]["attack"] = 1;
+enemies[enemy_name]["attack"] = 2;
 enemies[enemy_name]["defense"] = 2;
-enemies[enemy_name]["health"] = 20;
-enemies[enemy_name]["skill"] = 5;
-enemies[enemy_name]["xp_bounty"] = 20;
+enemies[enemy_name]["health"] = 16;
+enemies[enemy_name]["skill"] = 7;
+enemies[enemy_name]["xp_bounty"] = 16;
 enemies[enemy_name]["color"] = "#FF1111";
+enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
 
 enemy_name = "anti_virus";
 
 enemies[enemy_name] = new Object();
 enemies[enemy_name]["name"] = enemy_name;
-enemies[enemy_name]["attack"] = 3;
-enemies[enemy_name]["defense"] = 2;
-enemies[enemy_name]["health"] = 6;
-enemies[enemy_name]["skill"] = 8;
-enemies[enemy_name]["xp_bounty"] = 22;
+enemies[enemy_name]["attack"] = 4;
+enemies[enemy_name]["defense"] = 1;
+enemies[enemy_name]["health"] = 8;
+enemies[enemy_name]["skill"] = 10;
+enemies[enemy_name]["xp_bounty"] = 18;
 enemies[enemy_name]["color"] = "#EE00FF";
+enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
 
-function enemy(x, y, room, ai, type) {
+function enemy(x, y, room, type) {
 	this.x = x;
 	this.y = y;
 	this.type = type;
@@ -43,15 +48,16 @@ function enemy(x, y, room, ai, type) {
 	this.attack       = type["attack"];
 	this.defense      = type["defense"];
 	this.health       = type["health"];
+	this.max_health   = type["health"];
 	this.skill        = type["skill"];
 	this.xp_bounty    = type["xp_bounty"];
 	this.color        = type["color"];
+	this.ai           = type["ai"];
 	this.room = room;
-	this.ai = ai;
 	var space_border = 2;
 
 	this.recive_attack = function(damage, attacker) {
-		hud.set_message("You dealt " + damage + " damage");
+		hud.set_message("damaged dealt");
 		this.take_damage(damage);
 	};
 
@@ -59,12 +65,11 @@ function enemy(x, y, room, ai, type) {
 		if(Math.random() <= this.skill / target.skill) {
 			if(random_range(0, 100) <= this.skill - target.skill) {
 				target.recive_attack(this.attack * this.attack);
-				hud.set_message("You took critical damage");
 			} else {
 				target.recive_attack(this.attack);
 			}
 		} else {
-			hud.set_message("Enemy missed");
+			hud.set_message("hostile script attack failed");
 		}
 	};
 
@@ -74,7 +79,7 @@ function enemy(x, y, room, ai, type) {
 			this.health = 0;
 		}
 		if(this.health <= 0) {
-			hud.set_message("Enemy killed");
+			hud.set_message("hostile script terminated");
 		}
 	};
 	

@@ -39,7 +39,7 @@ function room(x, y, width, height) {
     
     this.chest = null;
 
-    this.ai = new ai();
+    //this.ai = new ai();
     
     this.spawn_enemies = function(quantity) {
         if(quantity > (this.width - 2) * (this.height - 2)) {
@@ -48,7 +48,7 @@ function room(x, y, width, height) {
         var keys = Object.keys(enemies);
         for(var i = 0; i < quantity; i++) {
         	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
-        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, this.ai.seek_and_attack_player, enemies[keys[keys.length * Math.random() << 0]]);
+        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, enemies[keys[keys.length * Math.random() << 0]]);
             this.floor[this.enemy_x][this.enemy_y] = "e";
         	this.enemies.push(this.enemy);
         }
@@ -99,7 +99,6 @@ function room(x, y, width, height) {
                     player.current_room = this.north;
                     player.x = this.north.south_door[0];
                     player.y = this.north.south_door[1];
-                    hud.pop_up_text = ["POPUP", "YAY"];
                 } else if(this.south_door !== null && this.south_door[0] === player.x && this.south_door[1] === player.y) {
                     player.current_room = this.south;
                     player.x = this.south.north_door[0];
