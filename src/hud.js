@@ -49,7 +49,7 @@ function hud(x, y, width, height) {
 		find_func = function(button) {
 			return button.text === " Decompile";
 		};
-		if(player.level_points > 0) {
+		if(player.level_points > 2) {
 			player.level_points -= 3;
 			player.add_ability("decompile");
 			hud.buttons.splice(hud.buttons.findIndex(find_func), 1);
@@ -60,7 +60,7 @@ function hud(x, y, width, height) {
 		find_func = function(button) {
 			return button.text === " Asyncronous CPU";
 		};
-		if(player.level_points > 0) {
+		if(player.level_points > 2) {
 			player.level_points -= 3;
 			player.add_ability("asyncronous_cpu");
 			player.level_skill("penetration", .2);
@@ -94,7 +94,7 @@ function hud(x, y, width, height) {
 		find_func = function(button) {
 			return button.text === " Passcodes";
 		};
-		if(player.level_points > 0) {
+		if(player.level_points > 2) {
 			player.level_points -= 3;
 			player.add_ability("passcodes");
 			player.level_skill("skill", 7);
@@ -106,7 +106,7 @@ function hud(x, y, width, height) {
 		find_func = function(button) {
 			return button.text === " Process Respawning";
 		};
-		if(player.level_points > 0) {
+		if(player.level_points > 2) {
 			player.level_points -= 3;
 			player.add_ability("process_respawning");
 			hud.buttons.splice(hud.buttons.findIndex(find_func), 1);
@@ -230,6 +230,12 @@ function hud(x, y, width, height) {
 			context.fillStyle = player.current_room.enemies[i].color;
 			context.fillRect(this.x + 2, this.y + 490 + (i * 20), SPACE_SIZE, SPACE_SIZE);
 		}
+		context.fillText("data node", this.x + 20, this.y + 780);
+		context.fillText("exit", this.x + 280, this.y + 780);
+		context.fillStyle = CHEST_COLOR;
+		context.fillRect(this.x + 140, this.y + 765, SPACE_SIZE, SPACE_SIZE);
+		context.fillStyle = EXIT_COLOR;
+		context.fillRect(this.x + 340, this.y + 765, SPACE_SIZE, SPACE_SIZE);
 	};
 
 	this.draw_death = function() {

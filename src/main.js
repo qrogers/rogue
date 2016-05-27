@@ -4,8 +4,7 @@ canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
 //TODO: Create ESC menu
-//TODO: Tutorial
-//TODO: Set exit minimum distance room start, maybe require key instead
+//TODO: Tutorial/Level 1
 //TODO: Add enemies and control types that spawn
 //TODO: Add AI, give each enemy an AI
 //TODO: Add sound
@@ -31,7 +30,7 @@ var BLOCKS_HEIGHT = Math.floor((canvas.height)                           / ((BLO
 var MAIN_COLOR = "#00FF00";
 var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
-var CHEST_COLOR = "#AAAA22";
+var CHEST_COLOR = "#3333CC";
 var EXIT_COLOR = "#FFFFFF";
 
 var TICK_KEY_VALUES = [83, 68, 87, 65, 37, 38, 39, 40];
@@ -54,6 +53,8 @@ var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 var level = 0;
 var num_rooms = 1;
 var target_num_rooms = 1;
+
+var last_room_spawned = null;
 
 var debug = false;
 
@@ -103,18 +104,7 @@ function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_wei
 	r1.seen = true;
 	r1.enemies = [];
 	
-	var exit_room = null;
-	var exit_x;
-	var exit_y;
-	while(true) {
-		exit_x = random_range(0, BLOCKS_WIDTH  - 1);
-		exit_y = random_range(0, BLOCKS_HEIGHT - 1);
-		if(typeof rooms[exit_x] !== "undefined" && typeof rooms[exit_x][exit_y] !== "undefined" && rooms[exit_x][exit_y] !== r1) {
-			break;
-		}
-	}
-	
-	exit_room = rooms[exit_x][exit_y];
+	var exit_room = last_room_spawned;
 	exit_room.floor[random_range(1, exit_room.width - 2)][random_range(1, exit_room.height - 2)] = "x";
 
 	player.health = player.max_health;

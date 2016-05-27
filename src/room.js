@@ -38,8 +38,6 @@ function room(x, y, width, height) {
     this.enemy_y;
     
     this.chest = null;
-
-    //this.ai = new ai();
     
     this.spawn_enemies = function(quantity) {
         if(quantity > (this.width - 2) * (this.height - 2)) {
@@ -187,6 +185,9 @@ function room(x, y, width, height) {
         var space_border = 2;
         if(this.seen || debug) {
             if(player.current_room === this || debug) {
+            	if(debug && last_room_spawned === this) {
+            		context.strokeStyle = "#FF0000";
+            	}
                 context.rect(this.xcor, this.ycor, this.width * SPACE_SIZE, this.height * SPACE_SIZE);
                 context.stroke();
                 for(var i = 0; i < this.floor.length; i++) {
@@ -247,6 +248,7 @@ function room(x, y, width, height) {
         var max_room_width = max_width;
         var min_room_height = min_height;
         var max_room_height = max_height;
+        last_room_spawned = this;
         if(num_rooms >= target_num_rooms) {
             return;
         }

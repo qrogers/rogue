@@ -71,9 +71,7 @@ function player() {
 	};
 	
 	this.add_ability = function(ability) {
-		if(this.level_points >= 3) {
 			this.abilities.push(ability);
-		}
 	};
 	
 	this.level_skill = function(skill, amount) {
