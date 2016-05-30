@@ -4,15 +4,15 @@ canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
 //TODO: Create ESC menu
-//TODO: Tutorial/Level 1
 //TODO: Add enemies and control types that spawn
-//TODO: Add AI, give each enemy an AI
+//TODO: Add AI
 //TODO: Add sound
-//TODO: Add story
-//TODO: Add levels
+//TODO: Tweak story
 //TODO: Balance
 //TODO: Sort out combat log
 //TODO: Expand on Chests
+
+//BUG: Chest not going away (probably fixed)
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -37,9 +37,17 @@ var TICK_KEY_VALUES = [83, 68, 87, 65, 37, 38, 39, 40];
 
 //new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn weight, relink weight)
 var level_data = [
-[3, 3, 5, 5,  6, 2, 1, 50, 50],
-[5, 6, 8, 7, 10, 2, 2, 20, 70],
-[4, 4, 6, 6, 12, 3, 3, 70, 80]
+[3, 3, 5, 5,  6, 0, 1, 50, 50],
+[5, 6, 8, 7, 10, 0, 2, 20, 70],
+[4, 4, 6, 6, 12, 0, 3, 70, 80],
+[4, 4, 6, 6, 12, 0, 3, 70, 80],
+[4, 4, 6, 6, 12, 0, 3, 70, 80]
+];
+
+var enemy_level_data = [
+["cron"],
+["cron", "firewall"],
+["cron", "firewall", "anti_virus"]
 ];
 
 document.addEventListener("keydown", handle_keypress);
@@ -104,6 +112,19 @@ function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_wei
 	r1.seen = true;
 	r1.enemies = [];
 	
+	var rx;
+	var ry;
+	for(var i = 0; i < hud.pop_up_text_data[level].length; i++) {
+		while(true) {
+			rx = random_range(0, BLOCKS_WIDTH  - 1);
+			ry = random_range(0, BLOCKS_HEIGHT - 1);
+			if(typeof rooms[rx] !== "undefined" && typeof rooms[rx][ry] !== "undefined" && rooms[rx][ry] !== r1 && rooms[rx][ry].pop_up_text === null) {
+				break;
+			}
+		}
+		rooms[rx][ry].pop_up_text = hud.pop_up_text_data[level][i];
+	}
+	
 	var exit_room = last_room_spawned;
 	exit_room.floor[random_range(1, exit_room.width - 2)][random_range(1, exit_room.height - 2)] = "x";
 
@@ -135,7 +156,7 @@ function spawn_chests(quantity) {
 	while(quantity > 0) {
 		var block_x = random_range(0, BLOCKS_WIDTH - 1);
 		var block_y = random_range(0, BLOCKS_WIDTH - 1);
-	    if(typeof rooms[block_x][block_y] !== 'undefined') {
+	    if(typeof rooms[block_x] !== 'undefined' && typeof rooms[block_x][block_y] !== 'undefined') {
 	    	rooms[block_x][block_y].spawn_chest();
 	    	quantity--;
 	    }

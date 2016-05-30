@@ -113,17 +113,126 @@ function hud(x, y, width, height) {
 		}
 	};
 	
-	this.story_texts = [["Your first asignment",
-						 "Hello,",
-						 "Your mission is to infiltrate",
-						 "the network and do horrible",
-						 "things to it.",
-						 "Like, really bad things",
-						 "Good luck.",
-						 "    -Your employer"],
-						 
-						 ["LEVEL 2 Story"],
-						 ["LEVEL 3 Story"]];
+	this.story_texts = [
+							["Hacking Proceedure Review",
+							 "Employee X047,",
+							 "We are sending you into a",
+							 "test server.",
+							 "I want to make sure you",
+							 "know the basics, remember:",
+							 "",
+							 "Navigate the directories",
+							 "with WASD.",
+							 "",
+							 "Moving onto black spaces",
+							 "will move you to the next",
+							 "directory.",
+							 "",
+							 "Watch out for hostile programs",
+							 "indicated by bright colored",
+							 "squares. You may also find",
+							 "script fragments which you",
+							 "can use to improve your",
+							 "hacking process.",
+							 "",
+							 "    -Your employer"],
+							
+							["Your first asignment",
+							 "Employee X047,",
+							 "We require the sensitive data",
+							 "contained within the private",
+							 "steams of various individuals.",
+							 "Why is not important so do",
+							 "not ask questions. Your",
+							 "first mark is Jane Doe.",
+							 "Learn all that you can.",
+							 "Oh, and don't get caught",
+							 "will you.",
+							 "",
+							 "    -Your employer"],
+							 
+							 ["A New Direction",
+							 "Employee X047,",
+							 "Good work on your last venture.",
+							 "Now, this next task may seem",
+							 "odd to you. We require data",
+							 "from the Facebook wall of one",
+							 "Jake Baker. He is an childish",
+							 "individual, however, we believe",
+							 "there's information of interest",
+							 "to be located. Tred carefully.",
+							 "",
+							 "    -Your employer"],
+							 
+							 ["Moving Forward",
+							 "Employee X047,",
+							 "We are pleased by the data",
+							 "you managed to recover, however",
+							 "there is yet more to be done.",
+							 "Your next target is John Doe.",
+							 "Specifically, we need access to",
+							 "his bank records so expect more",
+							 "resistance this time around.",
+							 "We trust you will not", 
+							 "disappoint.",
+							 "",
+							 "    -Your employer"],
+							 
+							 ["High Stakes",
+							 "Employee X047,",
+							 "This next matter is of an",
+							 "extremely sensitive nature",
+							 "I trust I need not remind you",
+							 "what will happen should you",
+							 "fancy yourself bold enough",
+							 "to leak this information.",
+							 "Now, this next individual, a",
+							 "one Tory Iceheart, is personal",
+							 "secretary to some...important",
+							 "people. We need what she knows.",
+							 "Get it, and leave no traces",
+							 "of your presence.",
+							 "",
+							 "    -Your employer"]
+						];
+						
+	this.pop_up_text_data = [
+							[["You will encounter various bits", "of information as you reach new", "directories"]],
+							
+							//These are tied to level 1
+							[
+							["Today I met this wonderful new guy.", "I did not know what to say to him -", "the anxiety is killing me!", "If only he knew how warm I could be…", "how warm I could be…"],
+							["Brother insists that I be more careful", "putting revealing photos of myself on", "Facebook - I told him to shove off!", "It’s not like anyone can see it when", "it’s set to private...sheesh!"],
+							["Mother and I had a falling out again…", "she insists I’m irresponsible with my time", "- as if! We’ll see how she feels when I forget", "to call her on Mother’s Day."],
+							["I wish you were more available to go to the Mall.", "I need new clothes and my paycheck just came", "today. Let’s just say I can afford it!!"],
+							["What did you think of that speech from", "Donald Duck? I tell you I’m one word away from", "going to one of his rallies and blowing", "everyone up!"]
+							],
+							
+							//These are tied to level 2
+							[
+							["$80,000 - Radiation Treatment", "           - Approved by Doctor"],
+							["$40,000 - Default on Housing Payment"],
+							["$10,200 - Gambling, Chesto’s Casino and Spa"],
+							["$8,000 - Payment Transfer to Joanna Price,", "           Specification: Child Care"],
+							["NOTICE: You’ve exceeded credit on this account", "           - please contact your local banker"]
+							],
+							
+							//These are tied to level 3
+							[
+							["Yo! Come to the junction today", "- we’re doing something fun and slightly illegal…", "you’d all better come or I’m coming after you!"],
+							["Smoke-out going on in the forest.", "Bring your friends, or don’t, whatever!"],
+							["Send your prayers for my Mom,", "she’s not been doing well lately", "- I’m… I’m really serious about this", "guys so don’t laugh, alright"],
+							["I want you all to come to my charity event", "- yeah yeah it’s for class alright don’t", "think I’ve gone soft alright…", "just shut up!"]
+							],
+							
+							//These are tied to level 4
+							[
+							["The board has advised I move the offshore", "account to somewhere other than Switzerland,", "they say it’s too cliche. I wish they’d just", "pay the taxes and be done with it -", "their money is more important to them than their", "wives!"],
+							["This reporter for the Daily Planet has been", "hounding my office for a comment on the recent", "scandal. I keep telling her that no comment", "means no comment! I, however, don’t doubt the", "chairman is capable of committing murder but", "it’s not my place", "to say anything beyond this log", "- after all this salary is keeping me afloat."],
+							["The FBI came in today with a warrant.", "The board has already had the files destroyed.", "Heh clever buggars.", "I suppose the powerful really don’t get", "what’s coming to them - then again I don’t much", "care."],
+							["IT sent me a message about security breaches.", "They say my password isn’t sufficiently difficult.", "I added a number."]
+							]
+						];
 	
 	var OSName = "Unknown OS";
 	if(navigator.appVersion.indexOf("Win")!=-1) OSName = "Windows";
@@ -180,14 +289,17 @@ function hud(x, y, width, height) {
 	};
 	
 	this.pop_up = function() {
-		context.fillStyle = MAIN_COLOR;
-		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
-		context.rect(20, 20, 200, 100);
-		context.fillText("press space to dismiss", 40, 120);
+		context.strokeStyle = MAIN_COLOR;
+		context.rect(840, 20, 600, (this.pop_up_text.length + 5) * 20);
+		context.fillStyle = "#009900";
+		context.fillRect(840, 20, 600, (this.pop_up_text.length + 5) * 20);
+		context.fillStyle = "#000015";
+		context.fillText("data entry found:", 850, 40);
+		context.fillText("press space to dismiss", 850, (this.pop_up_text.length + 5) * 20);
 		context.stroke();
 		for(var i = 0; i < this.pop_up_text.length; i++) {
-			context.fillText(this.pop_up_text[i], 52, 52 + (i * 20));
+			context.fillText(this.pop_up_text[i], 850, 82 + (i * 20));
 		}
 	};
 
@@ -203,7 +315,6 @@ function hud(x, y, width, height) {
 		context.fillStyle = MAIN_COLOR;
 		context.fillText("detection level: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
 		context.fillText("code fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
-		//context.fillText("Code Snippets: " + player.level_points, this.x + 20, this.y + 720);
 	};
 	
 	this.draw_game = function() {
@@ -217,12 +328,14 @@ function hud(x, y, width, height) {
 		context.lineWidth = "2";
 		context.rect(this.x, this.y, this.width, this.height);
 		context.stroke();
+		context.fillText("------hack status------", 1510, 70);
 		for(var i = 0; i < this.messages.length; i++) {
 			context.fillText(this.messages[i], this.x + 20, this.y + 170 + (20 * i));
 		}
 		if(this.pop_up_text.length > 0) {
 			this.pop_up();
 		}
+		context.fillStyle = MAIN_COLOR;
 		context.fillText("Hostile Programs:", this.x + 20, this.y + 480);
 		for(var i = 0; i < player.current_room.enemies.length; i ++) {
 			context.fillStyle = MAIN_COLOR;
@@ -230,6 +343,7 @@ function hud(x, y, width, height) {
 			context.fillStyle = player.current_room.enemies[i].color;
 			context.fillRect(this.x + 2, this.y + 490 + (i * 20), SPACE_SIZE, SPACE_SIZE);
 		}
+		context.fillStyle = MAIN_COLOR;
 		context.fillText("data node", this.x + 20, this.y + 780);
 		context.fillText("exit", this.x + 280, this.y + 780);
 		context.fillStyle = CHEST_COLOR;
@@ -264,126 +378,132 @@ function hud(x, y, width, height) {
 		context.fillText("[----------new message----------]", 41, 100);
 		context.fillText(this.story_texts[level][0], 80, 130);
 		for(var i = 1; i < this.story_texts[level].length; i++) {
-			context.fillText(this.story_texts[level][i], 80, 160 + (i * 20));
+			context.fillText(this.story_texts[level][i], 76, 160 + (i * 20));
 		}
 		context.fillText("[----------end message----------]", 41, 170 + (this.story_texts[level].length * 20));
 		
 		context.fillText("------script console------", 840, 70);
 		
-		context.fillText("code snippets -->", 720, 100);
-		context.fillText("<-- spend on upgrades", 970, 100);
-		
-		var money_color = "#CC9922";
-		
-		context.fillStyle = money_color;
-		context.fillText(player.level_points, 930, 100);
-		
-		context.fillStyle = MAIN_COLOR;
-		context.fillText("[---targeted scripts---]", 480, 130);
-		context.fillText("[----protective scripts----]", 780, 130);
-		//context.fillText("[------misc scripts------]", 1130, 130);
-		
-		if(!player.abilities.includes("decompile")) {
-			context.font = this.font_size + "px Lucida Console";
-			context.fillStyle = money_color;
-			context.fillText("3", 475, 582);
-			context.font = 15 + "px Lucida Console";
-			context.fillStyle = MAIN_COLOR;
-			context.fillText("Deconstruct failing programs", 500, 620);
-			context.fillText("to delete them as they fail", 500, 640);
-		}
-		
-		if(!player.abilities.includes("asyncronous_cpu")) {
-			context.font = this.font_size + "px Lucida Console";
-			context.fillStyle = money_color;
-			context.fillText("3", 475, 682);
-			context.font = 15 + "px Lucida Console";
-			context.fillStyle = MAIN_COLOR;
-			context.fillText("Run attack scripts in async", 500, 720);
-			context.fillText("to greatly increase offense", 500, 740);
-		}
-		
-		if(!player.abilities.includes("passcodes")) {
-			context.font = this.font_size + "px Lucida Console";
-			context.fillStyle = money_color;
-			context.fillText("3", 785, 582);
-			context.font = 15 + "px Lucida Console";
-			context.fillStyle = MAIN_COLOR;
-			context.fillText("Passcode security allows for", 812, 620);
-			context.fillText("greater avoidence of attacks", 812, 640);
-		}
-		
-		if(!player.abilities.includes("process_respawning")) {
-			context.font = this.font_size + "px Lucida Console";
-			context.fillStyle = money_color;
-			context.fillText("3", 785, 682);
-			context.font = 15 + "px Lucida Console";
-			context.fillStyle = MAIN_COLOR;
-			context.fillText("Respawn hacking scripts", 812, 720);
-			context.fillText("on first failure", 812, 740);
-		}
-		
-		context.font = this.font_size + "px Lucida Console";
-		context.fillStyle = money_color;
-		
-		context.fillText("1", 785, 182);
-		context.fillText("1", 785, 282);
-		context.fillText("1", 785, 382);
-		
-		context.fillText("1", 475, 182);
-		context.fillText("1", 475, 282);
-		context.fillText("1", 475, 382);
-		
-		//context.fillText("2", 1125, 182);
-		//context.fillText("2", 1125, 282);
-		//context.fillText("2", 1125, 382);
-		//context.fillText("2", 1125, 482);
-		
-		//context.font = 10 + "px Lucida Console";
-		
-		//context.fillText("-cost-", 462, 150);
-		
-		context.font = 15 + "px Lucida Console";
-		context.fillStyle = MAIN_COLOR;
-		
-		context.fillText("Increase ability to take", 500, 220);
-		context.fillText("down defensive programs", 500, 240);
-		context.fillText("Run script more effeciently", 500, 320);
-		context.fillText("to better combat attackers", 500, 340);
-		context.fillText("Faster execution speed for", 500, 420);
-		context.fillText("overall better attacks ", 500, 440);
-		
-		context.fillText("Better security to improve", 812, 220);
-		context.fillText("resistance to attacks", 812, 240);
-		context.fillText("Increased redudency to", 812, 320);
-		context.fillText("lengthen time until detected", 812, 340);
-		context.fillText("Improve security routines", 812, 420);
-		context.fillText("to be harder to attack", 812, 440);
-		
-		context.font = this.font_size + "px Lucida Console";
-		
 		context.fillText("------hack status------", 1510, 70);
 		
-		// context.fillText("Controls:", 800, 450);
-		// context.fillText("W: Move up", 840, 470);
-		// context.fillText("A: Move left", 840, 490);
-		// context.fillText("S: Move down", 840, 510);
-		// context.fillText("D: Move right", 840, 530);
-		// context.fillText("Move into enemies to attack", 840, 550);
-		// context.fillText("Player", 1200, 400);
-		// context.fillText("Enemy", 1200, 440);
-		// context.fillText("Chest", 1200, 480);
-		// context.fillText("Exit", 1200, 520);
-		// context.fillStyle = PLAYER_COLOR;
-		// context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
-		// context.fillStyle = "#FF0000";
-		// context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
-		// context.fillStyle = CHEST_COLOR;
-		// context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);
-		// context.fillStyle = EXIT_COLOR;
-		// context.fillRect(1200, 525, SPACE_SIZE, SPACE_SIZE);
-		for(var i = 0; i < this.buttons.length; i++) {
-			this.buttons[i].draw();
+		if(level !== 0) {
+		
+			context.fillText("code snippets -->", 720, 100);
+			context.fillText("<-- spend on upgrades", 970, 100);
+			
+			var money_color = "#CC9922";
+			
+			context.fillStyle = money_color;
+			context.fillText(player.level_points, 930, 100);
+			
+			context.fillStyle = MAIN_COLOR;
+			context.fillText("[---targeted scripts---]", 480, 130);
+			context.fillText("[----protective scripts----]", 780, 130);
+			//context.fillText("[------misc scripts------]", 1130, 130);
+			
+			if(!player.abilities.includes("decompile")) {
+				context.font = this.font_size + "px Lucida Console";
+				context.fillStyle = money_color;
+				context.fillText("3", 475, 582);
+				context.font = 15 + "px Lucida Console";
+				context.fillStyle = MAIN_COLOR;
+				context.fillText("Deconstruct failing programs", 500, 620);
+				context.fillText("to delete them as they fail", 500, 640);
+			}
+			
+			if(!player.abilities.includes("asyncronous_cpu")) {
+				context.font = this.font_size + "px Lucida Console";
+				context.fillStyle = money_color;
+				context.fillText("3", 475, 682);
+				context.font = 15 + "px Lucida Console";
+				context.fillStyle = MAIN_COLOR;
+				context.fillText("Run attack scripts in async", 500, 720);
+				context.fillText("to greatly increase offense", 500, 740);
+			}
+			
+			if(!player.abilities.includes("passcodes")) {
+				context.font = this.font_size + "px Lucida Console";
+				context.fillStyle = money_color;
+				context.fillText("3", 785, 582);
+				context.font = 15 + "px Lucida Console";
+				context.fillStyle = MAIN_COLOR;
+				context.fillText("Passcode security allows for", 812, 620);
+				context.fillText("greater avoidence of attacks", 812, 640);
+			}
+			
+			if(!player.abilities.includes("process_respawning")) {
+				context.font = this.font_size + "px Lucida Console";
+				context.fillStyle = money_color;
+				context.fillText("3", 785, 682);
+				context.font = 15 + "px Lucida Console";
+				context.fillStyle = MAIN_COLOR;
+				context.fillText("Respawn hacking scripts", 812, 720);
+				context.fillText("on first failure", 812, 740);
+			}
+			
+			context.font = this.font_size + "px Lucida Console";
+			context.fillStyle = money_color;
+			
+			context.fillText("1", 785, 182);
+			context.fillText("1", 785, 282);
+			context.fillText("1", 785, 382);
+			
+			context.fillText("1", 475, 182);
+			context.fillText("1", 475, 282);
+			context.fillText("1", 475, 382);
+			
+			//context.fillText("2", 1125, 182);
+			//context.fillText("2", 1125, 282);
+			//context.fillText("2", 1125, 382);
+			//context.fillText("2", 1125, 482);
+			
+			//context.font = 10 + "px Lucida Console";
+			
+			//context.fillText("-cost-", 462, 150);
+			
+			context.font = 15 + "px Lucida Console";
+			context.fillStyle = MAIN_COLOR;
+			
+			context.fillText("Increase ability to take", 500, 220);
+			context.fillText("down defensive programs", 500, 240);
+			context.fillText("Run script more effeciently", 500, 320);
+			context.fillText("to better combat attackers", 500, 340);
+			context.fillText("Faster execution speed for", 500, 420);
+			context.fillText("overall better attacks ", 500, 440);
+			
+			context.fillText("Better security to improve", 812, 220);
+			context.fillText("resistance to attacks", 812, 240);
+			context.fillText("Increased redudency to", 812, 320);
+			context.fillText("lengthen time until detected", 812, 340);
+			context.fillText("Improve security routines", 812, 420);
+			context.fillText("to be harder to attack", 812, 440);
+			
+			context.font = this.font_size + "px Lucida Console";
+			
+			// context.fillText("Controls:", 800, 450);
+			// context.fillText("W: Move up", 840, 470);
+			// context.fillText("A: Move left", 840, 490);
+			// context.fillText("S: Move down", 840, 510);
+			// context.fillText("D: Move right", 840, 530);
+			// context.fillText("Move into enemies to attack", 840, 550);
+			// context.fillText("Player", 1200, 400);
+			// context.fillText("Enemy", 1200, 440);
+			// context.fillText("Chest", 1200, 480);
+			// context.fillText("Exit", 1200, 520);
+			// context.fillStyle = PLAYER_COLOR;
+			// context.fillRect(1200, 405, SPACE_SIZE, SPACE_SIZE);
+			// context.fillStyle = "#FF0000";
+			// context.fillRect(1200, 445, SPACE_SIZE, SPACE_SIZE);
+			// context.fillStyle = CHEST_COLOR;
+			// context.fillRect(1200, 485, SPACE_SIZE, SPACE_SIZE);
+			// context.fillStyle = EXIT_COLOR;
+			// context.fillRect(1200, 525, SPACE_SIZE, SPACE_SIZE);
+			for(var i = 0; i < this.buttons.length; i++) {
+				this.buttons[i].draw();
+			}
+		} else {
+			//draw next level button
+			this.buttons[0].draw();
 		}
 	};
 }

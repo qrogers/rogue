@@ -4,6 +4,8 @@ var enemy_name = "";
 
 var ai_obj = new ai();
 
+//Names: htop, node.js, rvm, java, gcc
+
 enemy_name = "cron";
 
 enemies[enemy_name] = new Object();
@@ -57,7 +59,7 @@ function enemy(x, y, room, type) {
 	var space_border = 2;
 
 	this.recive_attack = function(damage, attacker) {
-		hud.set_message("damaged dealt");
+		hud.set_message("damage dealt");
 		this.take_damage(damage);
 	};
 

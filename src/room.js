@@ -21,6 +21,8 @@ function room(x, y, width, height) {
 	this.ycor = this.y * ((BLOCK_HEIGHT * SPACE_SIZE) + BLOCK_DISTANCE);
 
     this.seen = false;
+    
+    this.pop_up_text = null;
 
     this.floor = [];
     for(var i = 0; i < this.width; i++) {
@@ -43,10 +45,9 @@ function room(x, y, width, height) {
         if(quantity > (this.width - 2) * (this.height - 2)) {
         	quantity = (this.width - 2) * (this.height - 2);
         }
-        var keys = Object.keys(enemies);
         for(var i = 0; i < quantity; i++) {
         	while(this.floor[this.enemy_x = random_range(1, this.width - 2)][this.enemy_y = random_range(1, this.height - 2)] !== "-");
-        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, enemies[keys[keys.length * Math.random() << 0]]);
+        	this.enemy = new enemy(this.enemy_x, this.enemy_y, this, enemies[enemy_level_data[level][random_range(0, enemy_level_data[level].length - 1)]]);
             this.floor[this.enemy_x][this.enemy_y] = "e";
         	this.enemies.push(this.enemy);
         }
@@ -70,6 +71,7 @@ function room(x, y, width, height) {
     this.spawn_chest = function() {
     	var chest_x;
     	var chest_y;
+    	console.log("chest");
     	while(this.floor[chest_x = random_range(1, this.width - 2)][chest_y = random_range(1, this.height - 2)] !== "-");
         this.chest = new chest(chest_x, chest_y, this.chest_gain_xp);
         this.floor[chest_x][chest_y] = "c";
@@ -111,6 +113,10 @@ function room(x, y, width, height) {
                     player.y = this.west.east_door[1];
                 }
                 player.current_room.seen = true;
+                if(player.current_room.pop_up_text !== null) {
+                	hud.pop_up_text = player.current_room.pop_up_text;
+                }
+                player.current_room.pop_up_text = null;
                 enemy_move_lock = true;
             } else if(this.floor[player.x + movement[0]][player.y + movement[1]] === "c") {
             	this.chest.open();
