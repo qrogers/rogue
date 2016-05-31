@@ -42,6 +42,42 @@ enemies[enemy_name]["xp_bounty"] = 18;
 enemies[enemy_name]["color"] = "#EE00FF";
 enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
 
+enemy_name = "deep_scan";
+
+enemies[enemy_name] = new Object();
+enemies[enemy_name]["name"] = enemy_name;
+enemies[enemy_name]["attack"] = 6;
+enemies[enemy_name]["defense"] = 2;
+enemies[enemy_name]["health"] = 14;
+enemies[enemy_name]["skill"] = 14;
+enemies[enemy_name]["xp_bounty"] = 19;
+enemies[enemy_name]["color"] = "#CCFF33";
+enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
+
+enemy_name = "counter_hack";
+
+enemies[enemy_name] = new Object();
+enemies[enemy_name]["name"] = enemy_name;
+enemies[enemy_name]["attack"] = 8;
+enemies[enemy_name]["defense"] = 4;
+enemies[enemy_name]["health"] = 17;
+enemies[enemy_name]["skill"] = 16;
+enemies[enemy_name]["xp_bounty"] = 25;
+enemies[enemy_name]["color"] = "#FF9933";
+enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
+
+enemy_name = "clean_up";
+
+enemies[enemy_name] = new Object();
+enemies[enemy_name]["name"] = enemy_name;
+enemies[enemy_name]["attack"] = 4;
+enemies[enemy_name]["defense"] = 2;
+enemies[enemy_name]["health"] = 5;
+enemies[enemy_name]["skill"] = 35;
+enemies[enemy_name]["xp_bounty"] = 22;
+enemies[enemy_name]["color"] = "#AA9955";
+enemies[enemy_name]["ai"] = ai_obj.random_and_attack_player;
+
 function enemy(x, y, room, type) {
 	this.x = x;
 	this.y = y;

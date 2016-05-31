@@ -4,15 +4,10 @@ canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
 //TODO: Create ESC menu
-//TODO: Add enemies and control types that spawn
 //TODO: Add AI
 //TODO: Add sound
 //TODO: Tweak story
 //TODO: Balance
-//TODO: Sort out combat log
-//TODO: Expand on Chests
-
-//BUG: Chest not going away (probably fixed)
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -30,24 +25,26 @@ var BLOCKS_HEIGHT = Math.floor((canvas.height)                           / ((BLO
 var MAIN_COLOR = "#00FF00";
 var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
-var CHEST_COLOR = "#3333CC";
+var CHEST_COLOR = "#003300";
 var EXIT_COLOR = "#FFFFFF";
 
 var TICK_KEY_VALUES = [83, 68, 87, 65, 37, 38, 39, 40];
 
 //new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn weight, relink weight)
 var level_data = [
-[3, 3, 5, 5,  6, 0, 1, 50, 50],
-[5, 6, 8, 7, 10, 0, 2, 20, 70],
-[4, 4, 6, 6, 12, 0, 3, 70, 80],
-[4, 4, 6, 6, 12, 0, 3, 70, 80],
-[4, 4, 6, 6, 12, 0, 3, 70, 80]
+[3, 3, 4, 4,  6, 1, 1, 50, 70],
+[4, 5, 6, 8, 10, 2, 2, 20, 80],
+[5, 3, 7, 5, 12, 3, 2, 80, 30],
+[4, 4, 9, 9, 14, 4, 3, 75, 75],
+[3, 4, 7, 6, 16, 5, 4, 45, 50]
 ];
 
 var enemy_level_data = [
 ["cron"],
 ["cron", "firewall"],
-["cron", "firewall", "anti_virus"]
+["firewall", "anti_virus", "clean_up"],
+["cron", "firewall", "deep_scan", "clean_up"],
+["cron", "firewall", "anti_virus", "deep_scan", "counter_hack"]
 ];
 
 document.addEventListener("keydown", handle_keypress);
@@ -55,10 +52,10 @@ document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
 var player = new player();
-var state = "menu";
+var state = "start";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
-var level = 0;
+var level = 4;
 var num_rooms = 1;
 var target_num_rooms = 1;
 
@@ -77,7 +74,11 @@ draw();
 
 function next_level() {
 	level++;
-	transition_state("menu");
+	if(level > 4) {
+		transition_state("win");
+	} else {
+		transition_state("menu");
+	}
 }
 
 function new_level(mirw, marw, mirh, marh, tnr, me, nc, spawn_weight, relink_weight) {
@@ -156,7 +157,7 @@ function spawn_chests(quantity) {
 	while(quantity > 0) {
 		var block_x = random_range(0, BLOCKS_WIDTH - 1);
 		var block_y = random_range(0, BLOCKS_WIDTH - 1);
-	    if(typeof rooms[block_x] !== 'undefined' && typeof rooms[block_x][block_y] !== 'undefined') {
+	    if(typeof rooms[block_x] !== 'undefined' && typeof rooms[block_x][block_y] !== 'undefined' && rooms[block_x][block_y].chest === null) {
 	    	rooms[block_x][block_y].spawn_chest();
 	    	quantity--;
 	    }

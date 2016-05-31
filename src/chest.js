@@ -5,6 +5,5 @@ function chest(x, y, event) {
 	
 	this.open = function() {
 		this.event();
-		hud.set_message("code fragments found");
 	};
 }

@@ -63,17 +63,45 @@ function room(x, y, width, height) {
     //Chest functions
     
     this.chest_gain_xp = function() {
-		player.gain_xp(50);
+		player.gain_xp(25);
+		hud.set_message("code fragments found");
+	};
+	
+	this.chest_gain_health = function() {
+		player.level_skill("health", 1);
+		hud.set_message("script durability increased");
+	};
+	
+	this.chest_gain_attack = function() {
+		player.level_skill("attack", 1);
+		hud.set_message("script offense increased");
+	};
+	
+	this.chest_gain_skill = function() {
+		player.level_skill("skill", 1);
+		hud.set_message("script speed increased");
+	};
+	
+	this.chest_gain_penetration = function() {
+		player.level_skill("penetration", 1);
+		hud.set_message("script detection increased");
+	};
+	
+	this.chest_gain_defense = function() {
+		player.level_skill("defense", 1);
+		hud.set_message("script encryption increased");
 	};
 	
 	//End chest functions
+    
+    var chest_functions = [this.chest_gain_xp, this.chest_gain_health, this.chest_gain_attack, this.chest_gain_skill, this.chest_gain_penetration, this.chest_gain_defense];
     
     this.spawn_chest = function() {
     	var chest_x;
     	var chest_y;
     	console.log("chest");
     	while(this.floor[chest_x = random_range(1, this.width - 2)][chest_y = random_range(1, this.height - 2)] !== "-");
-        this.chest = new chest(chest_x, chest_y, this.chest_gain_xp);
+        this.chest = new chest(chest_x, chest_y, chest_functions[random_range(0, chest_functions.length - 1)]);
         this.floor[chest_x][chest_y] = "c";
     };
 

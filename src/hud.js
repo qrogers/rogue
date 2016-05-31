@@ -10,11 +10,11 @@ function hud(x, y, width, height) {
 	this.buttons = [];
 	
 	this.death_button_function = function() {
-		console.log("HERE");
 		transition_state("menu");
 	};
 	
-	this.death_button = new button(canvas.width / 2 - 60, canvas.height / 2 + 40, 113, 40, " Proceed", this.death_button_function, "#FF0000");
+	this.death_button = new button(canvas.width / 2 - 90, canvas.height / 2 + 40, 232, 40, " return to console", this.death_button_function, "#FF0000");
+	this.start_button = new button(canvas.width / 2 - 120, canvas.height / 2 + 40, 90, 40, " login", this.death_button_function, "#FF0000");
 	
 	this.next_level_button = function() {
 		hud.buttons = [];
@@ -126,12 +126,19 @@ function hud(x, y, width, height) {
 							 "",
 							 "Moving onto black spaces",
 							 "will move you to the next",
-							 "directory.",
+							 "directory. The exit is white.",
 							 "",
 							 "Watch out for hostile programs",
 							 "indicated by bright colored",
-							 "squares. You may also find",
-							 "script fragments which you",
+							 "squares. You can attack them",
+							 "by moving into them.",
+							 "But be careful, they will",
+							 "damage your connection,",
+							 "if it drops to zero, you",
+							 "will have to try again.",
+							 "",
+							 "You will also find",
+							 "code fragments which you",
 							 "can use to improve your",
 							 "hacking process.",
 							 "",
@@ -248,7 +255,7 @@ function hud(x, y, width, height) {
 	};
 
 	this.init_menu = function() {
-		this.buttons.push(new button(160, 640, 170, 40, " Begin Attack", this.next_level_button, "#FF0000"));
+		this.buttons.push(new button(1560, 640, 170, 40, " begin attack", this.next_level_button, "#FF0000"));
 		
 		//Names: Credentials
 		
@@ -310,18 +317,23 @@ function hud(x, y, width, height) {
 			this.draw_menu();
 		} else if(state === "death") {
 			this.draw_death();
+		} else if(state === "start") {
+			this.draw_start();
+		} else if(state === "win") {
+			this.draw_win();
 		}
-		console.log();
 		context.fillStyle = MAIN_COLOR;
-		context.fillText("detection level: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
-		context.fillText("code fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
+		if(state !== "death" && state !== "start" && state !== "win") {
+			context.fillText("connection strength: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
+			context.fillText("code fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
+		}
 	};
 	
 	this.draw_game = function() {
 		if(OSName === "MacOS") {
 			context.font = this.font_size + "px Andale Mono";
 		} else if(OSName === "Windows") {
-			context.font = this.font_size + "px Lucida Console";
+			context.font = this.font_size + "px Courier";
 		}
 		context.fillStyle = MAIN_COLOR;
 		context.strokeStyle = MAIN_COLOR;
@@ -329,14 +341,15 @@ function hud(x, y, width, height) {
 		context.rect(this.x, this.y, this.width, this.height);
 		context.stroke();
 		context.fillText("------hack status------", 1510, 70);
+		context.fillText("------log------", 1570, 170);
 		for(var i = 0; i < this.messages.length; i++) {
-			context.fillText(this.messages[i], this.x + 20, this.y + 170 + (20 * i));
+			context.fillText(this.messages[i], this.x + 20, this.y + 190 + (20 * i));
 		}
 		if(this.pop_up_text.length > 0) {
 			this.pop_up();
 		}
 		context.fillStyle = MAIN_COLOR;
-		context.fillText("Hostile Programs:", this.x + 20, this.y + 480);
+		context.fillText("hostile programs:", this.x + 20, this.y + 480);
 		for(var i = 0; i < player.current_room.enemies.length; i ++) {
 			context.fillStyle = MAIN_COLOR;
 			context.fillText(player.current_room.enemies[i].name + ' ' + (Math.floor((player.current_room.enemies[i].health / player.current_room.enemies[i].max_health) * 100)) + "%", this.x + 20, this.y + 500 + (i * 20));
@@ -353,18 +366,68 @@ function hud(x, y, width, height) {
 	};
 
 	this.draw_death = function() {
-		context.font = this.font_size + "px Lucida Console";
+		context.font = this.font_size + "px Courier";
 		context.strokeStyle = MAIN_COLOR;
 		context.fillStyle = MAIN_COLOR;
-		context.fillText(">intrusion detected", canvas.width / 2 - 100, 300);
-		context.fillText(">fatal error", canvas.width / 2 - 100, 320);
-		context.fillText(">connection terminated", canvas.width / 2 - 100, 340);
+		context.fillText(">systems failing", canvas.width / 2 - 100, 280);
+		context.fillText(">fatal error", canvas.width / 2 - 100, 300);
+		context.fillText(">illegal access detected", canvas.width / 2 - 100, 320);
+		//context.fillText(">connection terminated", canvas.width / 2 - 100, 340);
+		
+		context.fillText("____ ____ _  _ _  _ ____ ____ ___ _ ____ _  _    _    ____ ____ ___", canvas.width / 2 - 350, 360);
+		context.fillText("|    |  | |\\ | |\\ | |___ |     |  | |  | |\\ |    |    |  | [__   |  ", canvas.width / 2 - 350, 380);
+		context.fillText("|___ |__| | \\| | \\| |___ |___  |  | |__| | \\|    |___ |__| ___]  |  ", canvas.width / 2 - 350, 400);
+		
 		context.stroke();
 		this.death_button.draw();
 	};
+	
+	this.draw_start = function() {
+		context.font = this.font_size + "px Courier";
+		context.strokeStyle = MAIN_COLOR;
+		context.fillStyle = MAIN_COLOR;
+		context.fillText("____ _   _ ___  ____ ____ ", canvas.width / 2 - 350, 280);
+		context.fillText("|     \\_/  |__] |___ |  |", canvas.width / 2 - 350, 300);
+		context.fillText("|___   |   |__] |___ |  |", canvas.width / 2 - 350, 320);
+		
+		context.fillText(" __  ____ ____ _  _ ____", canvas.width / 2 - 98, 320);
+		context.fillText("| \\  |  | | __ |  | |___", canvas.width / 2 - 98, 340);
+		context.fillText("|  \\ |__| |__] |__| |___", canvas.width / 2 - 98, 360);
+		context.stroke();
+		this.start_button.draw();
+	};
+	
+	this.draw_win = function() {
+		context.font = this.font_size + "px Courier";
+		context.strokeStyle = MAIN_COLOR;
+		context.fillStyle = MAIN_COLOR;
+		context.fillText("_  _ ____ ____ _  _    ____ ____ _  _ ___  _    ____ ___ ____  ", canvas.width / 2 - 350, 280);
+		context.fillText("|__| |__| |    |_/     |    |  | |\\/| |__] |    |___  |  |___ ", canvas.width / 2 - 350, 300);
+		context.fillText("|  | |  | |___ | \\_    |___ |__| |  | |    |___ |___  |  |___ ", canvas.width / 2 - 350, 320);
+		context.fillText("Cyber Rogue", canvas.width / 2 - 350, 480);
+		context.fillText("a game by", canvas.width / 2 - 325, 520);
+		context.fillText("Joseph Rogers", canvas.width / 2 - 300, 560);
+		context.fillText("Matthew Loyola", canvas.width / 2 - 300, 580);
+		context.fillText("John Chau", canvas.width / 2 - 300, 600);
+		context.fillText("Kevin Vue", canvas.width / 2 - 300, 620);
+		context.stroke();
+	};
+	
+	
+	// context.fillText("____ _   _ ___  ____ ____ ", canvas.width / 2 - 350, 280);
+	// context.fillText("|     \\_/  |__] |___ |__/", canvas.width / 2 - 350, 300);
+	// context.fillText("|___   |   |__] |___ |  \\", canvas.width / 2 - 350, 320);
+// 		
+	// context.fillText("____ ____ ____ _  _ ____", canvas.width / 2 - 100, 320);
+	// context.fillText("|__/ |  | | __ |  | |___", canvas.width / 2 - 100, 340);
+	// context.fillText("|  \\ |__| |__] |__| |___", canvas.width / 2 - 100, 360);
+	
+	// context.fillText("____ _   _ ___  ____ ____ ____ ____ ____ _  _ ____", canvas.width / 2 - 350, 280);
+	// context.fillText("|     \\_/  |__] |___ |__/ |__/ |  | | __ |  | |___", canvas.width / 2 - 350, 300);
+	// context.fillText("|___   |   |__] |___ |  \\ |  \\ |__| |__] |__| |___", canvas.width / 2 - 350, 320);
 
 	this.draw_menu = function() {
-		context.font = this.font_size + "px Lucida Console";
+		context.font = this.font_size + "px Courier";
 		context.fillStyle = MAIN_COLOR;
 		context.strokeStyle = MAIN_COLOR;
 		context.lineWidth = "2";
@@ -405,14 +468,14 @@ function hud(x, y, width, height) {
 				context.font = this.font_size + "px Lucida Console";
 				context.fillStyle = money_color;
 				context.fillText("3", 475, 582);
-				context.font = 15 + "px Lucida Console";
+				context.font = 15 + "px Courier";
 				context.fillStyle = MAIN_COLOR;
 				context.fillText("Deconstruct failing programs", 500, 620);
 				context.fillText("to delete them as they fail", 500, 640);
 			}
 			
 			if(!player.abilities.includes("asyncronous_cpu")) {
-				context.font = this.font_size + "px Lucida Console";
+				context.font = this.font_size + "px Courier";
 				context.fillStyle = money_color;
 				context.fillText("3", 475, 682);
 				context.font = 15 + "px Lucida Console";
@@ -422,7 +485,7 @@ function hud(x, y, width, height) {
 			}
 			
 			if(!player.abilities.includes("passcodes")) {
-				context.font = this.font_size + "px Lucida Console";
+				context.font = this.font_size + "px Courier";
 				context.fillStyle = money_color;
 				context.fillText("3", 785, 582);
 				context.font = 15 + "px Lucida Console";
@@ -432,7 +495,7 @@ function hud(x, y, width, height) {
 			}
 			
 			if(!player.abilities.includes("process_respawning")) {
-				context.font = this.font_size + "px Lucida Console";
+				context.font = this.font_size + "px Courier";
 				context.fillStyle = money_color;
 				context.fillText("3", 785, 682);
 				context.font = 15 + "px Lucida Console";
@@ -441,7 +504,7 @@ function hud(x, y, width, height) {
 				context.fillText("on first failure", 812, 740);
 			}
 			
-			context.font = this.font_size + "px Lucida Console";
+			context.font = this.font_size + "px Courier";
 			context.fillStyle = money_color;
 			
 			context.fillText("1", 785, 182);
@@ -461,24 +524,24 @@ function hud(x, y, width, height) {
 			
 			//context.fillText("-cost-", 462, 150);
 			
-			context.font = 15 + "px Lucida Console";
+			context.font = 15 + "px Courier";
 			context.fillStyle = MAIN_COLOR;
 			
 			context.fillText("Increase ability to take", 500, 220);
 			context.fillText("down defensive programs", 500, 240);
 			context.fillText("Run script more effeciently", 500, 320);
-			context.fillText("to better combat attackers", 500, 340);
+			context.fillText("to inflict more damage", 500, 340);
 			context.fillText("Faster execution speed for", 500, 420);
-			context.fillText("overall better attacks ", 500, 440);
+			context.fillText("more accurate attacks ", 500, 440);
 			
 			context.fillText("Better security to improve", 812, 220);
 			context.fillText("resistance to attacks", 812, 240);
 			context.fillText("Increased redudency to", 812, 320);
-			context.fillText("lengthen time until detected", 812, 340);
+			context.fillText("increase connection strength", 812, 340);
 			context.fillText("Improve security routines", 812, 420);
 			context.fillText("to be harder to attack", 812, 440);
 			
-			context.font = this.font_size + "px Lucida Console";
+			context.font = this.font_size + "px Courier";
 			
 			// context.fillText("Controls:", 800, 450);
 			// context.fillText("W: Move up", 840, 470);

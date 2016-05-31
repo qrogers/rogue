@@ -2,10 +2,10 @@ function player() {
 	this.x;
 	this.y;
 	this.color = PLAYER_COLOR;
-	this.attack = 4;
-	this.max_health = 1200;
+	this.attack = 40;
+	this.max_health = 1000;
 	this.health = this.max_health;
-	this.skill = 25;
+	this.skill = 23;
 	//Pen = % of Defense ignored
 	this.penetration = 0;
 	this.defense = 1;
