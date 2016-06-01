@@ -2,8 +2,8 @@ function player() {
 	this.x;
 	this.y;
 	this.color = PLAYER_COLOR;
-	this.attack = 40;
-	this.max_health = 1000;
+	this.attack = 4;
+	this.max_health = 10;
 	this.health = this.max_health;
 	this.skill = 23;
 	//Pen = % of Defense ignored
@@ -13,7 +13,7 @@ function player() {
 	this.xpn = 100;
 	this.abilities = [];
 	this.level = 1;
-	this.level_points = 2;
+	this.level_points = 200;
 	this.respawn = false;
 	this.current_room = null;
 	
@@ -67,7 +67,7 @@ function player() {
 		this.level_points += 1;
 		this.level += 1;
 		this.xp -= this.xpn;
-		hud.set_message("Level up");
+		hud.set_message("code snippet completed");
 	};
 	
 	this.add_ability = function(ability) {

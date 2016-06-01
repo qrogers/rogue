@@ -7,7 +7,11 @@ function hud(x, y, width, height) {
 	this.height = height;
 	this.messages = [];
 	this.pop_up_text = [];
+	this.last_pop_up = [];
 	this.buttons = [];
+	
+	//red to green, 21 colors
+	this.health_colors = ["#FF0000", "#F20D00", "#E61A00", "#D92600", "#CC3300", "#BF4000", "#B24C00", "#A65900", "#996600", "#8C7300", "#808000", "#738C00", "#669900", "#59A600", "#4DB200", "#40BF00", "#33CC00", "#26D900", "#19E600", "#0DF200", "#00FF00"];
 	
 	this.death_button_function = function() {
 		transition_state("menu");
@@ -47,7 +51,7 @@ function hud(x, y, width, height) {
 	
 	this.decompile_button = function() {
 		find_func = function(button) {
-			return button.text === " Decompile";
+			return button.text === " decompile";
 		};
 		if(player.level_points > 2) {
 			player.level_points -= 3;
@@ -58,7 +62,7 @@ function hud(x, y, width, height) {
 	
 	this.asyncronous_cpu_button = function() {
 		find_func = function(button) {
-			return button.text === " Asyncronous CPU";
+			return button.text === " asyncronous CPU";
 		};
 		if(player.level_points > 2) {
 			player.level_points -= 3;
@@ -92,7 +96,7 @@ function hud(x, y, width, height) {
 	
 	this.passcodes_button = function() {
 		find_func = function(button) {
-			return button.text === " Passcodes";
+			return button.text === " passcodes";
 		};
 		if(player.level_points > 2) {
 			player.level_points -= 3;
@@ -104,7 +108,7 @@ function hud(x, y, width, height) {
 	
 	this.process_respawning_button = function() {
 		find_func = function(button) {
-			return button.text === " Process Respawning";
+			return button.text === " process respawning";
 		};
 		if(player.level_points > 2) {
 			player.level_points -= 3;
@@ -259,32 +263,32 @@ function hud(x, y, width, height) {
 		
 		//Names: Credentials
 		
-		this.buttons.push(new button(500, 160, 250, 40, " Decryption", this.decryption_button));
-		this.buttons.push(new button(500, 260, 250, 40, " Threading", this.threading_button));
-		this.buttons.push(new button(500, 360, 250, 40, " Runtime", this.runtime_button));
+		this.buttons.push(new button(500, 160, 250, 40, " decryption", this.decryption_button));
+		this.buttons.push(new button(500, 260, 250, 40, " threading", this.threading_button));
+		this.buttons.push(new button(500, 360, 250, 40, " runtime", this.runtime_button));
 		
 		//Instakill enemies that drop below 8 health
 		if(!player.abilities.includes("decompile")) {
-			this.buttons.push(new button(500, 560, 250, 40, " Decompile", this.decompile_button));
+			this.buttons.push(new button(500, 560, 250, 40, " decompile", this.decompile_button));
 		}
 		
 		//Large attack and penetration increase
 		if(!player.abilities.includes("asyncronous_cpu")) {
-			this.buttons.push(new button(500, 660, 250, 40, " Asyncronous CPU", this.asyncronous_cpu_button));
+			this.buttons.push(new button(500, 660, 250, 40, " asyncronous CPU", this.asyncronous_cpu_button));
 		}
 		
-		this.buttons.push(new button(810, 160, 250, 40, " Encoding", this.encoding_button));
-		this.buttons.push(new button(810, 260, 250, 40, " Redundent Systems", this.redundent_systems_button));
-		this.buttons.push(new button(810, 360, 250, 40, " Security", this.security_button));
+		this.buttons.push(new button(810, 160, 250, 40, " encoding", this.encoding_button));
+		this.buttons.push(new button(810, 260, 250, 40, " redundent systems", this.redundent_systems_button));
+		this.buttons.push(new button(810, 360, 250, 40, " security", this.security_button));
 		
 		//Large skill increase
 		if(!player.abilities.includes("passcodes")) {
-			this.buttons.push(new button(810, 560, 250, 40, " Passcodes", this.passcodes_button));
+			this.buttons.push(new button(810, 560, 250, 40, " passcodes", this.passcodes_button));
 		}
 		
 		//Sets player to 5 health after a fatal hit once per level
 		if(!player.abilities.includes("process_respawning")) {
-			this.buttons.push(new button(810, 660, 250, 40, " Process Respawning", this.process_respawning_button));
+			this.buttons.push(new button(810, 660, 250, 40, " process respawning", this.process_respawning_button));
 		}
 		
 		// this.buttons.push(new button(1150, 160, 250, 40, " SSH Monitoring", this.increase_health_button));
@@ -324,7 +328,9 @@ function hud(x, y, width, height) {
 		}
 		context.fillStyle = MAIN_COLOR;
 		if(state !== "death" && state !== "start" && state !== "win") {
+			context.fillStyle = this.health_colors[Math.floor((Math.floor((player.health / player.max_health) * 100)) / 4.8)];
 			context.fillText("connection strength: " + (Math.floor((player.health / player.max_health) * 100)) + "%", this.x + 20, 100);
+			context.fillStyle = MAIN_COLOR;
 			context.fillText("code fragments: " + (Math.floor((player.xp / player.xpn) * 100)) + "%", this.x + 20, this.y + 120);
 		}
 	};
@@ -445,7 +451,7 @@ function hud(x, y, width, height) {
 		}
 		context.fillText("[----------end message----------]", 41, 170 + (this.story_texts[level].length * 20));
 		
-		context.fillText("------script console------", 840, 70);
+		context.fillText("------script console------", 798, 70);
 		
 		context.fillText("------hack status------", 1510, 70);
 		
@@ -457,7 +463,7 @@ function hud(x, y, width, height) {
 			var money_color = "#CC9922";
 			
 			context.fillStyle = money_color;
-			context.fillText(player.level_points, 930, 100);
+			context.fillText(player.level_points, 942, 100);
 			
 			context.fillStyle = MAIN_COLOR;
 			context.fillText("[---targeted scripts---]", 480, 130);

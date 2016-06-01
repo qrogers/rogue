@@ -16,7 +16,7 @@ enemies[enemy_name]["health"] = 8;
 enemies[enemy_name]["skill"] = 15;
 enemies[enemy_name]["xp_bounty"] = 9;
 enemies[enemy_name]["color"] = "#FFFF11";
-enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
+enemies[enemy_name]["ai"] = ai_obj.point_and_attack_player;
 
 enemy_name = "firewall";
 
@@ -28,7 +28,7 @@ enemies[enemy_name]["health"] = 16;
 enemies[enemy_name]["skill"] = 7;
 enemies[enemy_name]["xp_bounty"] = 16;
 enemies[enemy_name]["color"] = "#FF1111";
-enemies[enemy_name]["ai"] = ai_obj.seek_and_attack_player;
+enemies[enemy_name]["ai"] = ai_obj.point_and_attack_player;
 
 enemy_name = "anti_virus";
 
@@ -92,6 +92,7 @@ function enemy(x, y, room, type) {
 	this.color        = type["color"];
 	this.ai           = type["ai"];
 	this.room = room;
+	this.direction = 1;
 	var space_border = 2;
 
 	this.recive_attack = function(damage, attacker) {

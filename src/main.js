@@ -3,11 +3,10 @@
 canvas = document.getElementById('rogue');
 context = canvas.getContext('2d');
 
-//TODO: Create ESC menu
-//TODO: Add AI
-//TODO: Add sound
 //TODO: Tweak story
 //TODO: Balance
+//TODO: Tweak enemy ai and types
+//TODO: Tilte screen matrix
 
 var HUD_BUFFER = 10;
 var HUD_WIDTH = canvas.width * .2;
@@ -25,7 +24,7 @@ var BLOCKS_HEIGHT = Math.floor((canvas.height)                           / ((BLO
 var MAIN_COLOR = "#00FF00";
 var BACKGROUND_COLOR = "#000000";
 var PLAYER_COLOR = "#0000FF";
-var CHEST_COLOR = "#003300";
+var CHEST_COLOR = "#005500";
 var EXIT_COLOR = "#FFFFFF";
 
 var TICK_KEY_VALUES = [83, 68, 87, 65, 37, 38, 39, 40];
@@ -52,10 +51,10 @@ document.addEventListener("mouseup", handle_mouse_up);
 
 var rooms = [];
 var player = new player();
-var state = "start";
+var state = "menu";
 var hud = new hud(HUD_X, HUD_Y, HUD_WIDTH, HUD_HEIGHT);
 
-var level = 4;
+var level = 1;
 var num_rooms = 1;
 var target_num_rooms = 1;
 
@@ -207,8 +206,14 @@ function handle_keypress(e) {
 	    } else if(code === 65 || code === 37) {
 	        movement = [-1, 0];
 	    } else if(code === 32) {
-	    	hud.pop_up_text = [];
-	    	draw();
+	    	if(hud.pop_up_text.length > 0) {
+	    		hud.last_pop_up = hud.pop_up_text;
+	    		hud.pop_up_text = [];
+	    		draw();
+	    	} else {
+	    		hud.pop_up_text = hud.last_pop_up;
+	    		draw();
+	    	}
 	    }
 	    if(TICK_KEY_VALUES.includes(code)) {
 	    	player.current_room.move_player(movement);
